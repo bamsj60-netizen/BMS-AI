@@ -181,11 +181,39 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding: 1.5rem;
         }
+
+        /* ERROR MODAL */
+        #error-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        #error-overlay.show { display: flex; }
     </style>
 </head>
 <body class="dark" id="app">
 
     <div id="toast">Berhasil Disalin</div>
+
+    <!-- Error Modal for Configuration -->
+    <div id="error-overlay">
+        <div class="glass p-8 rounded-[2rem] max-w-md w-full text-center space-y-6 border border-red-500/30">
+            <div class="w-20 h-20 bg-red-500/20 rounded-full mx-auto flex items-center justify-center text-red-500">
+                <i class="fas fa-triangle-exclamation text-3xl"></i>
+            </div>
+            <div class="space-y-2">
+                <h3 class="text-xl font-bold font-outfit">Konfigurasi Diperlukan</h3>
+                <p id="error-message" class="text-sm opacity-60">Sepertinya kamu belum memasukkan API Key di baris kode nomor 371.</p>
+            </div>
+            <button onclick="document.getElementById('error-overlay').classList.remove('show')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-all">SAYA MENGERTI</button>
+        </div>
+    </div>
 
     <div class="flex h-screen overflow-hidden relative">
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-40 hidden lg:hidden opacity-0 transition-opacity duration-300"></div>
@@ -355,7 +383,10 @@
     </div>
 
     <script>
-        const apiKey = "";
+        // PENTING: Kamu HARUS mengisi apiKey di bawah ini agar website bekerja di GitHub Pages!
+        // Ambil di https://aistudio.google.com/app/apikey (GRATIS)
+        const apiKey = ""; 
+
         let state = {
             chats: JSON.parse(localStorage.getItem('bms_pro_v5_data')) || [],
             activeId: null,
@@ -370,6 +401,11 @@
         const welcomeScreen = document.getElementById('welcome-screen');
 
         window.onload = () => {
+            // Check for API Key first
+            if (!apiKey && typeof __initial_auth_token === 'undefined') {
+                document.getElementById('error-overlay').classList.add('show');
+            }
+
             renderHistory();
             if(state.chats.length > 0) {
                 state.activeId = state.chats[0].id;
@@ -491,8 +527,12 @@
             const typingDiv = showTyping();
             
             try {
+                // VALIDASI API KEY SEBELUM FETCH
+                if (!apiKey && typeof __initial_auth_token === 'undefined') {
+                    throw new Error("API Key masih kosong! Kamu harus mengisinya di baris ke-371 pada kode HTML-mu agar fitur chat ini berfungsi di website-mu sendiri.");
+                }
+
                 const modelLabel = selector.options[selector.selectedIndex].text;
-                // Improved System Prompt for more engaging conversation and removing visual separators
                 const systemPrompt = `Kamu adalah BMS AI Professional v5.0. 
                 Gaya Bicara: Ramah, asik, informatif, dan sedikit santai (seperti teman tapi tetap profesional). 
                 Bahasa: Gunakan Bahasa Indonesia yang natural. 
@@ -516,11 +556,19 @@
                         systemInstruction: { parts: [{ text: systemPrompt }] }
                     })
                 });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    if (res.status === 400) throw new Error("Format permintaan salah atau Gambar terlalu besar.");
+                    if (res.status === 403) throw new Error("API Key tidak valid atau izin ditolak.");
+                    if (res.status === 429) throw new Error("Limit penggunaan gratis Gemini tercapai (Sabar ya!).");
+                    throw new Error(errData.error?.message || "Koneksi terputus ke server pusat AI.");
+                }
+
                 const result = await res.json();
                 if(typingDiv) typingDiv.remove();
                 
                 let aiResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || "Yah, maaf banget koneksi lagi bermasalah.";
-                // Post-processing to ensure no separators are shown
                 aiResponse = aiResponse.replace(/^\s*[-*_]{3,}\s*$/gm, '');
 
                 chat.messages.push({ role: 'ai', content: aiResponse });
@@ -528,7 +576,11 @@
                 renderMessages();
             } catch (err) {
                 if(typingDiv) typingDiv.remove();
-                chat.messages.push({ role: 'ai', content: "Ups, servernya lagi sibuk nih. Coba lagi bentar ya!" });
+                console.error("BMS AI Error:", err);
+                chat.messages.push({ 
+                    role: 'ai', 
+                    content: `**⚠️ Gagal Terhubung:**\n\n${err.message}\n\n*Jika ini website milikmu, pastikan API Key di baris 371 sudah benar.*` 
+                });
                 renderMessages();
             } finally {
                 state.isTyping = false;
@@ -558,6 +610,7 @@
             renderMessages();
             state.isTyping = true;
             try {
+                if (!apiKey) throw new Error("API Key Kosong");
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -572,7 +625,7 @@
                 renderMessages();
             } catch (e) {
                 const idx = chat.messages.findIndex(m => m.id === msgId);
-                if(idx !== -1) chat.messages[idx].content = "Duh, gagal ngerender gambarnya. Coba lagi nanti ya.";
+                if(idx !== -1) chat.messages[idx].content = "**Gagal membuat gambar.**\nPastikan API Key sudah terisi dan model Imagen sudah aktif di akunmu.";
                 renderMessages();
             } finally { state.isTyping = false; }
         }
@@ -592,7 +645,6 @@
                     imgContent = `<img src="${m.image}" class="w-full rounded-2xl mb-3 border border-white/10 shadow-lg cursor-pointer" onclick="window.open('${m.image}')">`;
                 }
                 
-                // Clean content from separators just in case
                 let cleanContent = m.content.replace(/^\s*[-*_]{3,}\s*$/gm, '');
 
                 const formatted = cleanContent
