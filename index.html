@@ -125,11 +125,11 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
         .action-btn:hover { transform: scale(1.15) rotate(5deg); box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4); }
-        .tts-playing { 
-            background: #10b981; 
-            animation: tts-pulse 1.5s infinite;
-        }
+        
+        /* TTS & STT States */
+        .tts-playing { background: #10b981; animation: tts-pulse 1.5s infinite; }
         .tts-playing i::before { content: "\f04c"; }
+        .stt-listening { background: #ef4444; animation: tts-pulse 1s infinite; }
 
         @keyframes tts-pulse {
             0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
@@ -137,18 +137,7 @@
             100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        /* QUICK ACTION CARDS */
-        .action-card {
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .action-card:hover {
-            transform: translateY(-5px);
-            background: rgba(59, 130, 246, 0.1);
-            border-color: rgba(59, 130, 246, 0.3);
-        }
-
-        /* TOAST NOTIFICATION FIXED */
+        /* TOAST NOTIFICATION */
         #toast {
             position: fixed;
             bottom: 120px;
@@ -169,51 +158,34 @@
             opacity: 0;
             visibility: hidden;
         }
-        #toast.show { 
-            transform: translateX(-50%) translateY(0); 
-            opacity: 1;
-            visibility: visible;
-        }
+        #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; visibility: visible; }
 
-        /* CUSTOMER SERVICE SECTION */
         .cs-container {
             margin-top: auto;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             padding: 1.5rem;
         }
 
-        /* ERROR MODAL */
-        #error-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            backdrop-filter: blur(10px);
-            z-index: 200;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+        /* NEW: Feature Cards UI */
+        .feature-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem;
+            border-radius: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: left;
         }
-        #error-overlay.show { display: flex; }
+        .feature-card:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
+        }
     </style>
 </head>
 <body class="dark" id="app">
 
     <div id="toast">Berhasil Disalin</div>
-
-    <!-- Error Modal for Configuration -->
-    <div id="error-overlay">
-        <div class="glass p-8 rounded-[2rem] max-w-md w-full text-center space-y-6 border border-red-500/30">
-            <div class="w-20 h-20 bg-red-500/20 rounded-full mx-auto flex items-center justify-center text-red-500">
-                <i class="fas fa-triangle-exclamation text-3xl"></i>
-            </div>
-            <div class="space-y-2">
-                <h3 class="text-xl font-bold font-outfit">Konfigurasi Diperlukan</h3>
-                <p id="error-message" class="text-sm opacity-60">Sepertinya kamu belum memasukkan API Key di baris kode nomor 371.</p>
-            </div>
-            <button onclick="document.getElementById('error-overlay').classList.remove('show')" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-xs font-bold transition-all">SAYA MENGERTI</button>
-        </div>
-    </div>
 
     <div class="flex h-screen overflow-hidden relative">
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/70 z-40 hidden lg:hidden opacity-0 transition-opacity duration-300"></div>
@@ -250,32 +222,49 @@
                     </div>
                     <div>
                         <p class="text-[11px] font-bold">Lapor Bug & Saran</p>
-                        <p class="text-[9px] opacity-40">Hubungi Customer Service</p>
+                        <p class="text-[9px] opacity-40">Hubungi CS</p>
                     </div>
                 </a>
             </div>
 
             <div class="p-6 border-t border-white/5 space-y-5">
                 <div class="space-y-3">
-                    <label class="text-[10px] font-bold uppercase tracking-widest opacity-40 px-2">Arsitektur Mesin</label>
+                    <label class="text-[10px] font-bold uppercase tracking-widest opacity-40 px-2">Konfigurasi Mesin</label>
                     <div class="relative">
                         <select id="model-selector" class="w-full bg-black/40 dark:text-white border border-white/10 rounded-xl p-4 text-xs font-semibold outline-none appearance-none cursor-pointer focus:border-blue-500/50">
                             <optgroup label="Reasoning & Intelligence">
-                                <option value="gpt-oss-120b">GPT OSS 120B (Ultra)</option>
-                                <option value="gpt-oss-20b">GPT OSS 20B (Fast)</option>
+                                <option value="gpt-oss-120b">GPT OSS 120B</option>
+                                <option value="gpt-oss-20b">GPT OSS 20B</option>
                                 <option value="qwen-3-32b">Qwen 3 32B</option>
                             </optgroup>
-                            <optgroup label="Multimodal & Tools">
-                                <option value="llama-4-scout">Llama 4 Scout (Vision)</option>
-                                <option value="kimi-k2">Kimi K2 (Long Context)</option>
+                            <optgroup label="Function Calling / Tool Use">
+                                <option value="gpt-oss-120b-fc">GPT OSS 120B (FC)</option>
+                                <option value="gpt-oss-20b-fc">GPT OSS 20B (FC)</option>
+                                <option value="llama-4-scout">Llama 4 Scout</option>
+                                <option value="qwen-3-32b-fc">Qwen 3 32B (FC)</option>
+                                <option value="kimi-k2">Kimi K2</option>
                             </optgroup>
-                            <optgroup label="Audio & Speech">
+                            <optgroup label="Text to Speech (TTS)">
                                 <option value="elevenlabs-tts">ElevenLabs TTS</option>
-                                <option value="orpheus-english">Orpheus Voice (EN)</option>
-                                <option value="whisper-v3">Whisper Large v3 (STT)</option>
+                                <option value="orpheus-en">Orpheus English</option>
+                                <option value="orpheus-ar">Orpheus Arabic Saudi</option>
                             </optgroup>
-                            <optgroup label="Creative Arsitektur">
-                                <option value="imagen-4.0">Imagen 4.0 (Visual Gen)</option>
+                            <optgroup label="Speech to Text (STT)">
+                                <option value="whisper-v3">Whisper Large v3</option>
+                                <option value="whisper-turbo">Whisper Large v3 Turbo</option>
+                            </optgroup>
+                            <optgroup label="Text to Text & Multilingual">
+                                <option value="gpt-oss-120b-txt">GPT OSS 120B</option>
+                                <option value="gpt-oss-20b-txt">GPT OSS 20B</option>
+                                <option value="kimi-k2-txt">Kimi K2</option>
+                                <option value="llama-4-scout-txt">Llama 4 Scout</option>
+                                <option value="llama-3.3-70b">Llama 3.3 70B</option>
+                            </optgroup>
+                            <optgroup label="Vision">
+                                <option value="llama-4-scout-vision">Llama 4 Scout Vision</option>
+                            </optgroup>
+                            <optgroup label="Safety & Moderation">
+                                <option value="safety-gpt-20b">Safety GPT OSS 20B</option>
                             </optgroup>
                         </select>
                         <i class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[10px] opacity-30 pointer-events-none"></i>
@@ -305,10 +294,6 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div class="hidden md:block text-right">
-                        <p class="text-[10px] font-bold opacity-40 uppercase">Status</p>
-                        <p class="text-[11px] font-bold">Encrypted</p>
-                    </div>
                     <div class="w-10 h-10 rounded-2xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
                         <i class="fas fa-user-shield text-blue-500"></i>
                     </div>
@@ -316,37 +301,34 @@
             </header>
 
             <div id="chat-viewport" class="flex-1 overflow-y-auto p-4 md:p-12 space-y-10 no-scrollbar">
-                <div id="welcome-container">
-                    <div id="welcome-screen" class="max-w-2xl mx-auto py-10 md:py-20 text-center space-y-8">
-                        <div class="w-24 h-24 bg-gradient-to-tr from-blue-600/20 to-purple-600/20 rounded-[2.5rem] mx-auto flex items-center justify-center border border-blue-500/20 shadow-2xl">
-                            <i class="fas fa-brain text-5xl text-blue-500"></i>
+                <!-- Welcome UI -->
+                <div id="welcome-screen" class="max-w-4xl mx-auto py-10 md:py-16 text-center space-y-12">
+                    <div class="space-y-6">
+                        <div class="w-20 h-20 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-3xl mx-auto flex items-center justify-center shadow-2xl animate-pulse">
+                            <i class="fas fa-bolt text-3xl text-white"></i>
                         </div>
-                        <div class="space-y-3">
-                            <h1 class="text-4xl font-extrabold font-outfit tracking-tight">Intelligence <span class="text-blue-500">Redefined</span></h1>
-                            <p class="text-sm opacity-50 max-w-md mx-auto">Halo! Sistem siap bantu kamu nih. Mau ngerjain apa hari ini?</p>
+                        <div class="space-y-2">
+                            <h1 class="text-4xl md:text-5xl font-black font-outfit tracking-tight">Apa yang bisa saya <span class="text-blue-500">bantu?</span></h1>
+                            <p class="text-sm md:text-base opacity-50 max-w-xl mx-auto">Selamat datang di BMS AI Professional. Silakan pilih contoh tugas atau mulai mengetik pertanyaan Anda di bawah.</p>
                         </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left pt-6">
-                            <div onclick="quickMessage('Bantu saya membuat rencana diet sehat')" class="action-card p-5 glass rounded-3xl border border-white/5">
-                                <i class="fas fa-apple-whole text-green-500 mb-3"></i>
-                                <h4 class="text-xs font-bold uppercase mb-1">Diet Planner</h4>
-                                <p class="text-[10px] opacity-40">Mulai rencana nutrisi harian Anda.</p>
-                            </div>
-                            <div onclick="quickMessage('Jelaskan teori relativitas dengan sederhana')" class="action-card p-5 glass rounded-3xl border border-white/5">
-                                <i class="fas fa-atom text-blue-500 mb-3"></i>
-                                <h4 class="text-xs font-bold uppercase mb-1">Explain Concept</h4>
-                                <p class="text-[10px] opacity-40">Pelajari hal sulit dengan cara mudah.</p>
-                            </div>
-                            <div onclick="quickMessage('Tuliskan kode Python untuk scraper berita')" class="action-card p-5 glass rounded-3xl border border-white/5">
-                                <i class="fas fa-code text-purple-500 mb-3"></i>
-                                <h4 class="text-xs font-bold uppercase mb-1">Code Assistant</h4>
-                                <p class="text-[10px] opacity-40">Tulis, debug, atau optimasi kode Anda.</p>
-                            </div>
-                            <div onclick="quickMessage('Buatkan itinerary liburan 3 hari ke Bali')" class="action-card p-5 glass rounded-3xl border border-white/5">
-                                <i class="fas fa-plane-departure text-orange-500 mb-3"></i>
-                                <h4 class="text-xs font-bold uppercase mb-1">Travel Guide</h4>
-                                <p class="text-[10px] opacity-40">Rencanakan perjalanan impian Anda.</p>
-                            </div>
+                    </div>
+
+                    <!-- Feature Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div onclick="quickMessage('Buatkan saya rencana belajar Python untuk pemula selama 30 hari.')" class="feature-card">
+                            <i class="fas fa-code text-blue-500 mb-3 text-xl"></i>
+                            <h3 class="text-xs font-bold uppercase tracking-wider mb-1">Coding & Tech</h3>
+                            <p class="text-[11px] opacity-40">Buat rencana belajar atau debug kode pemrograman.</p>
+                        </div>
+                        <div onclick="quickMessage('Tuliskan email profesional untuk lamaran kerja di perusahaan teknologi.')" class="feature-card">
+                            <i class="fas fa-pen-nib text-purple-500 mb-3 text-xl"></i>
+                            <h3 class="text-xs font-bold uppercase tracking-wider mb-1">Writing & Content</h3>
+                            <p class="text-[11px] opacity-40">Tulis email, artikel, atau caption sosial media.</p>
+                        </div>
+                        <div onclick="quickMessage('Jelaskan konsep mekanika kuantum dengan cara yang sangat sederhana.')" class="feature-card">
+                            <i class="fas fa-lightbulb text-yellow-500 mb-3 text-xl"></i>
+                            <h3 class="text-xs font-bold uppercase tracking-wider mb-1">Education</h3>
+                            <p class="text-[11px] opacity-40">Penjelasan konsep rumit menjadi lebih mudah dimengerti.</p>
                         </div>
                     </div>
                 </div>
@@ -354,17 +336,18 @@
 
             <div class="p-4 md:p-10">
                 <div class="max-w-5xl mx-auto">
+                    <!-- Image Preview -->
                     <div id="image-preview-box" class="hidden mb-4 p-3 glass rounded-3xl inline-flex items-center gap-4 animate-bounce-short">
                         <div class="relative w-16 h-16">
                             <img id="img-preview" class="w-full h-full object-cover rounded-2xl border border-white/10">
                             <button onclick="removeImage()" class="absolute -top-2 -right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-lg"><i class="fas fa-times"></i></button>
                         </div>
-                        <p class="text-[10px] font-bold uppercase opacity-50 pr-4">Gambar Terlampir</p>
+                        <p class="text-[10px] font-bold uppercase opacity-50 pr-4">Vision Source Ready</p>
                     </div>
 
                     <div class="relative glass rounded-[2.5rem] p-2 shadow-2xl border border-white/5 focus-within:border-blue-500/40 transition-all duration-300">
                         <div class="flex items-end gap-1">
-                            <button onclick="document.getElementById('file-input').click()" class="w-14 h-14 flex items-center justify-center text-gray-500 hover:text-blue-500 transition-colors shrink-0">
+                            <button onclick="document.getElementById('file-input').click()" class="w-14 h-14 flex items-center justify-center text-gray-500 hover:text-blue-500 transition-colors shrink-0" title="Vision / Upload">
                                 <i class="fas fa-camera-retro text-xl"></i>
                             </button>
                             <input type="file" id="file-input" class="hidden" accept="image/*" onchange="previewImage(event)">
@@ -372,27 +355,32 @@
                             <textarea id="main-input" rows="1" placeholder="Tanya apa aja ke aku..." 
                                 class="flex-1 bg-transparent border-none focus:ring-0 py-4 px-3 text-sm md:text-base max-h-48 outline-none resize-none no-scrollbar"></textarea>
 
+                            <button onclick="startSTT()" id="mic-btn" class="w-14 h-14 flex items-center justify-center text-gray-500 hover:text-red-500 transition-colors shrink-0">
+                                <i class="fas fa-microphone text-xl"></i>
+                            </button>
+
                             <button onclick="handleSend()" id="send-btn" class="w-14 h-14 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-[1.6rem] flex items-center justify-center shadow-xl active:scale-90 transition-transform shrink-0">
                                 <i class="fas fa-paper-plane"></i>
                             </button>
                         </div>
                     </div>
+                    <p class="text-[9px] text-center mt-4 opacity-30 font-bold uppercase tracking-[0.2em]">BMS AI uses multimodal architecture for cross-language reasoning</p>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        // PENTING: Kamu HARUS mengisi apiKey di bawah ini agar website bekerja di GitHub Pages!
-        // Ambil di https://aistudio.google.com/app/apikey (GRATIS)
-        const apiKey = ""; 
+        // Updated Groq API Key
+        const groqApiKey = "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";
 
         let state = {
             chats: JSON.parse(localStorage.getItem('bms_pro_v5_data')) || [],
             activeId: null,
             isTyping: false,
             currentImage: null,
-            isSpeaking: false
+            isSpeaking: false,
+            isListening: false
         };
 
         const viewport = document.getElementById('chat-viewport');
@@ -401,11 +389,6 @@
         const welcomeScreen = document.getElementById('welcome-screen');
 
         window.onload = () => {
-            // Check for API Key first
-            if (!apiKey && typeof __initial_auth_token === 'undefined') {
-                document.getElementById('error-overlay').classList.add('show');
-            }
-
             renderHistory();
             if(state.chats.length > 0) {
                 state.activeId = state.chats[0].id;
@@ -416,7 +399,6 @@
 
             selector.onchange = () => {
                 document.getElementById('header-model-name').innerText = selector.options[selector.selectedIndex].text;
-                input.placeholder = selector.value === 'imagen-4.0' ? "Mau gambar apa nih?" : "Tanya apa aja ke aku...";
             };
 
             input.addEventListener('input', () => {
@@ -449,16 +431,6 @@
             showToast("Udah disalin ya!");
         }
 
-        function downloadImage(url) {
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = `BMS_AI_Image_${Date.now()}.png`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            showToast("Gambar Berhasil Diunduh");
-        }
-
         function showWelcome() {
             if(!viewport || !welcomeScreen) return;
             viewport.innerHTML = '';
@@ -485,7 +457,7 @@
         function createNewChat() {
             const chat = { 
                 id: Date.now(), 
-                title: 'Obrolan Baru ' + (state.chats.length + 1), 
+                title: 'Chat ' + (state.chats.length + 1), 
                 messages: [],
                 model: selector.value
             };
@@ -497,29 +469,23 @@
 
         function quickMessage(text) {
             input.value = text;
+            input.dispatchEvent(new Event('input'));
             handleSend();
         }
 
         async function handleSend() {
             const text = input.value.trim();
-            const model = selector.value;
             if(!text && !state.currentImage) return;
             if(state.isTyping) return;
             if(!state.activeId) createNewChat();
+            
             const chat = state.chats.find(c => c.id === state.activeId);
-            if(!chat) return;
             if(welcomeScreen) welcomeScreen.classList.add('hidden');
-
-            if(model === 'imagen-4.0') {
-                input.value = '';
-                await generateImage(text);
-                return;
-            }
 
             const userMsg = { role: 'user', content: text, image: state.currentImage };
             chat.messages.push(userMsg);
             renderMessages();
-            const tempImg = state.currentImage;
+            
             input.value = '';
             input.style.height = 'auto';
             removeImage();
@@ -527,60 +493,45 @@
             const typingDiv = showTyping();
             
             try {
-                // VALIDASI API KEY SEBELUM FETCH
-                if (!apiKey && typeof __initial_auth_token === 'undefined') {
-                    throw new Error("API Key masih kosong! Kamu harus mengisinya di baris ke-371 pada kode HTML-mu agar fitur chat ini berfungsi di website-mu sendiri.");
-                }
-
                 const modelLabel = selector.options[selector.selectedIndex].text;
-                const systemPrompt = `Kamu adalah BMS AI Professional v5.0. 
-                Gaya Bicara: Ramah, asik, informatif, dan sedikit santai (seperti teman tapi tetap profesional). 
-                Bahasa: Gunakan Bahasa Indonesia yang natural. 
-                Aturan Penting: 
-                1. JANGAN gunakan garis pemisah seperti "---" dalam jawabanmu. 
-                2. JANGAN gunakan kata-kata yang terlalu kaku. 
-                3. Gunakan formatting Markdown (bold, list, code) agar mudah dibaca. 
-                4. Jika ditanya identitas, sebutkan kamu adalah BMS AI. 
-                Mesin saat ini: ${modelLabel}.`;
+                const modelValue = selector.value;
+                const systemPrompt = `Kamu adalah BMS AI Professional v5.0, asisten kecerdasan buatan tingkat lanjut yang dikembangkan oleh BMS. Role aktif kamu saat ini: ${modelLabel}. Kamu harus menjawab dengan sangat detail, informatif, dan akurat dalam Bahasa Indonesia. Jika jawaban membutuhkan pemformatan teknis (seperti kode atau tabel), gunakan Markdown yang rapi.`;
 
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                // Build context (last 5 messages for memory)
+                const history = chat.messages.slice(-6).map(m => ({
+                    role: m.role === 'ai' ? 'assistant' : 'user',
+                    content: m.content
+                }));
+
+                const res = await fetch(`https://api.groq.com/openai/v1/chat/completions`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${groqApiKey}`
+                    },
                     body: JSON.stringify({
-                        contents: [{
-                            parts: [
-                                { text: text || "Halo, apa kabar?" },
-                                ...(tempImg ? [{ inlineData: { mimeType: "image/png", data: tempImg.split(',')[1] } }] : [])
-                            ]
-                        }],
-                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                        model: "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: systemPrompt },
+                            ...history
+                        ],
+                        temperature: 0.7,
+                        max_tokens: 4096, // Meningkatkan panjang jawaban
+                        top_p: 1
                     })
                 });
-
-                if (!res.ok) {
-                    const errData = await res.json();
-                    if (res.status === 400) throw new Error("Format permintaan salah atau Gambar terlalu besar.");
-                    if (res.status === 403) throw new Error("API Key tidak valid atau izin ditolak.");
-                    if (res.status === 429) throw new Error("Limit penggunaan gratis Gemini tercapai (Sabar ya!).");
-                    throw new Error(errData.error?.message || "Koneksi terputus ke server pusat AI.");
-                }
 
                 const result = await res.json();
                 if(typingDiv) typingDiv.remove();
                 
-                let aiResponse = result.candidates?.[0]?.content?.parts?.[0]?.text || "Yah, maaf banget koneksi lagi bermasalah.";
-                aiResponse = aiResponse.replace(/^\s*[-*_]{3,}\s*$/gm, '');
-
+                const aiResponse = result.choices?.[0]?.message?.content || "Maaf, sistem mengalami kendala saat memproses permintaan Anda.";
+                
                 chat.messages.push({ role: 'ai', content: aiResponse });
                 saveToLocal();
                 renderMessages();
             } catch (err) {
                 if(typingDiv) typingDiv.remove();
-                console.error("BMS AI Error:", err);
-                chat.messages.push({ 
-                    role: 'ai', 
-                    content: `**⚠️ Gagal Terhubung:**\n\n${err.message}\n\n*Jika ini website milikmu, pastikan API Key di baris 371 sudah benar.*` 
-                });
+                chat.messages.push({ role: 'ai', content: `⚠️ **Kesalahan Sistem:** Gagal terhubung ke server. Pastikan koneksi internet stabil atau coba model lain. (Detail: ${err.message})` });
                 renderMessages();
             } finally {
                 state.isTyping = false;
@@ -588,46 +539,39 @@
         }
 
         async function playTTS(text, btnElement) {
+            const currentModel = selector.value;
             if(state.isSpeaking) {
                 window.speechSynthesis.cancel();
                 state.isSpeaking = false;
-                document.querySelectorAll('.tts-btn').forEach(b => b.classList.remove('tts-playing'));
+                btnElement.classList.remove('tts-playing');
                 return;
             }
-            const cleanText = text.replace(/[#*`_~]/g, '').replace(/\[.*?\]/g, '');
+
+            const cleanText = text.replace(/[#*`_~]/g, '');
             const utterance = new SpeechSynthesisUtterance(cleanText);
-            utterance.lang = 'id-ID';
+            
+            if(currentModel === 'orpheus-ar') utterance.lang = 'ar-SA';
+            else if(currentModel === 'orpheus-en') utterance.lang = 'en-US';
+            else utterance.lang = 'id-ID';
+
             utterance.onstart = () => { state.isSpeaking = true; btnElement.classList.add('tts-playing'); };
             utterance.onend = () => { state.isSpeaking = false; btnElement.classList.remove('tts-playing'); };
-            utterance.onerror = () => { state.isSpeaking = false; btnElement.classList.remove('tts-playing'); };
             window.speechSynthesis.speak(utterance);
         }
 
-        async function generateImage(prompt) {
-            const chat = state.chats.find(c => c.id === state.activeId);
-            const msgId = 'img-' + Date.now();
-            chat.messages.push({ role: 'ai', content: `**Sip, aku buatin dulu ya visualnya...**\nDeskripsi: _${prompt}_`, id: msgId, isLoading: true });
-            renderMessages();
-            state.isTyping = true;
-            try {
-                if (!apiKey) throw new Error("API Key Kosong");
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ instances: { prompt: prompt }, parameters: { sampleCount: 1 } })
-                });
-                const data = await res.json();
-                const b64 = data.predictions[0].bytesBase64Encoded;
-                const imageUrl = `data:image/png;base64,${b64}`;
-                const idx = chat.messages.findIndex(m => m.id === msgId);
-                if(idx !== -1) { chat.messages[idx] = { role: 'ai', content: `**Taraa! Ini hasilnya:**`, image: imageUrl }; }
-                saveToLocal();
-                renderMessages();
-            } catch (e) {
-                const idx = chat.messages.findIndex(m => m.id === msgId);
-                if(idx !== -1) chat.messages[idx].content = "**Gagal membuat gambar.**\nPastikan API Key sudah terisi dan model Imagen sudah aktif di akunmu.";
-                renderMessages();
-            } finally { state.isTyping = false; }
+        function startSTT() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return showToast("Browser tidak mendukung STT");
+
+            const micBtn = document.getElementById('mic-btn');
+            if(state.isListening) return;
+
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'id-ID';
+            recognition.onstart = () => { state.isListening = true; micBtn.classList.add('stt-listening'); };
+            recognition.onresult = (event) => { input.value = event.results[0][0].transcript; input.dispatchEvent(new Event('input')); };
+            recognition.onend = () => { state.isListening = false; micBtn.classList.remove('stt-listening'); };
+            recognition.start();
         }
 
         function renderMessages() {
@@ -635,40 +579,35 @@
             if(!chat || !viewport) return;
             viewport.innerHTML = '';
             if(chat.messages.length === 0) { showWelcome(); return; }
+            
             chat.messages.forEach((m) => {
                 const div = document.createElement('div');
                 div.className = `flex w-full ${m.role === 'user' ? 'justify-end' : 'justify-start'} mb-8`;
-                let imgContent = '';
-                if(m.isLoading) {
-                    imgContent = `<div class="w-full aspect-square rounded-2xl bg-white/5 animate-pulse flex items-center justify-center mb-3 border border-white/5"><i class="fas fa-wand-magic-sparkles text-3xl opacity-20"></i></div>`;
-                } else if(m.image) {
-                    imgContent = `<img src="${m.image}" class="w-full rounded-2xl mb-3 border border-white/10 shadow-lg cursor-pointer" onclick="window.open('${m.image}')">`;
-                }
                 
-                let cleanContent = m.content.replace(/^\s*[-*_]{3,}\s*$/gm, '');
-
-                const formatted = cleanContent
+                let imgContent = m.image ? `<img src="${m.image}" class="w-full rounded-2xl mb-3 border border-white/10 shadow-lg cursor-pointer" onclick="window.open('${m.image}')">` : '';
+                
+                // Better Markdown-like formatting
+                const formatted = m.content
                     .replace(/^# (.*$)/gim, '<h1>$1</h1>')
                     .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                    .replace(/^### (.*$)/gim, '<h3 class="text-lg font-bold mt-4 mb-2">$1</h3>')
                     .replace(/^\- (.*$)/gim, '<li>$1</li>')
+                    .replace(/^\d+\. (.*$)/gim, '<li>$1</li>')
                     .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                     .replace(/`(.*?)`/g, '<code>$1</code>')
                     .replace(/\n/g, '<br>');
 
-                let actionsHtml = '';
-                if(m.role === 'ai' && !m.isLoading) {
-                    actionsHtml = `<div class="msg-actions">
-                        <button class="action-btn" onclick="copyToClipboard(\`${m.content.replace(/[`"'\\]/g, ' ')}\`)" title="Salin"><i class="fas fa-copy"></i></button>
-                        ${m.image ? `<button class="action-btn" onclick="downloadImage('${m.image}')" title="Unduh"><i class="fas fa-download"></i></button>` : ''}
-                        <button class="action-btn tts-btn" onclick="playTTS(\`${m.content.replace(/[`"'\\]/g, ' ')}\`, this)" title="Dengar"><i class="fas fa-volume-high"></i></button>
-                    </div>`;
-                }
+                const actions = m.role === 'ai' ? `
+                    <div class="msg-actions">
+                        <button class="action-btn" onclick="copyToClipboard(\`${m.content.replace(/[`"'\\]/g, ' ')}\`)"><i class="fas fa-copy"></i></button>
+                        <button class="action-btn tts-btn" onclick="playTTS(\`${m.content.replace(/[`"'\\]/g, ' ')}\`, this)"><i class="fas fa-volume-high"></i></button>
+                    </div>` : '';
 
                 div.innerHTML = `
                     <div class="msg-container ${m.role === 'user' ? 'user-msg' : 'glass'} shadow-xl">
                         ${imgContent}
                         <div class="ai-content">${formatted}</div>
-                        ${actionsHtml}
+                        ${actions}
                     </div>`;
                 viewport.appendChild(div);
             });
@@ -676,7 +615,6 @@
         }
 
         function showTyping() {
-            if(!viewport) return null;
             const div = document.createElement('div');
             div.className = 'flex justify-start mb-6';
             div.innerHTML = `<div class="msg-container glass flex gap-2 items-center"><div class="typing-dot"></div><div class="typing-dot" style="animation-delay:0.2s"></div><div class="typing-dot" style="animation-delay:0.4s"></div></div>`;
@@ -691,8 +629,8 @@
             cont.innerHTML = '';
             state.chats.forEach(c => {
                 const btn = document.createElement('button');
-                btn.className = `w-full text-left p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all mb-1 ${state.activeId === c.id ? 'bg-blue-600/20 text-blue-500 border border-blue-500/20 shadow-lg' : 'opacity-40 hover:opacity-100 hover:bg-white/5'}`;
-                btn.innerHTML = `<i class="fas fa-message mr-3 opacity-30"></i> ${c.title}`;
+                btn.className = `w-full text-left p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all mb-1 ${state.activeId === c.id ? 'bg-blue-600/20 text-blue-500 border border-blue-500/20' : 'opacity-40 hover:opacity-100 hover:bg-white/5'}`;
+                btn.innerHTML = `<i class="fas fa-message mr-3"></i> ${c.title}`;
                 btn.onclick = () => { state.activeId = c.id; renderMessages(); renderHistory(); if(window.innerWidth < 1024) toggleSidebar(); };
                 cont.appendChild(btn);
             });
@@ -704,28 +642,25 @@
             const reader = new FileReader();
             reader.onload = (ev) => {
                 state.currentImage = ev.target.result;
-                const box = document.getElementById('image-preview-box');
-                const img = document.getElementById('img-preview');
-                if(box) box.classList.remove('hidden');
-                if(img) img.src = ev.target.result;
+                document.getElementById('image-preview-box').classList.remove('hidden');
+                document.getElementById('img-preview').src = ev.target.result;
             };
             reader.readAsDataURL(file);
         }
 
         function removeImage() {
             state.currentImage = null;
-            const box = document.getElementById('image-preview-box');
-            if(box) box.classList.add('hidden');
-            const fileInput = document.getElementById('file-input');
-            if(fileInput) fileInput.value = '';
+            document.getElementById('image-preview-box').classList.add('hidden');
+            document.getElementById('file-input').value = '';
         }
 
         function saveToLocal() {
+            // Save last 20 messages for each chat, strip images to save space
             const dataToSave = state.chats.map(c => ({
                 ...c,
-                messages: c.messages.map(m => {
+                messages: c.messages.slice(-20).map(m => {
                     const { image, ...rest } = m;
-                    return rest;
+                    return m.image && m.image.startsWith('data:') ? rest : m;
                 })
             }));
             localStorage.setItem('bms_pro_v5_data', JSON.stringify(dataToSave.slice(0, 15)));
@@ -735,7 +670,7 @@
             document.body.classList.toggle('light');
             document.body.classList.toggle('dark');
             const icon = document.getElementById('theme-icon');
-            if(icon) icon.className = document.body.classList.contains('light') ? 'fas fa-sun text-orange-500' : 'fas fa-moon text-blue-400';
+            icon.className = document.body.classList.contains('light') ? 'fas fa-sun text-orange-500' : 'fas fa-moon text-blue-400';
         }
 
         function clearHistory() {
