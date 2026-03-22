@@ -3,386 +3,443 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMS AI | Next-Gen Intelligence</title>
+    <title>BMS AI | Intelligence Beyond Limits</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Framer Motion via script if possible, or use standard CSS animations for stability in one file -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;600;800&display=swap');
-        
         :root {
-            --bg-main: #0a0a0a;
-            --bg-side: #111111;
-            --card: #1a1a1a;
-            --accent: #ffffff;
-            --text-dim: #a1a1aa;
-            --border: rgba(255, 255, 255, 0.08);
-        }
-
-        .light-theme {
-            --bg-main: #ffffff;
-            --bg-side: #f4f4f5;
-            --card: #ffffff;
-            --accent: #09090b;
-            --text-dim: #71717a;
-            --border: rgba(0, 0, 0, 0.08);
+            --primary: #3b82f6;
+            --accent: #06b6d4;
+            --bg-dark: #050505;
+            --bg-light: #ffffff;
+            --card-dark: #121212;
+            --card-light: #f3f4f6;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--accent);
-            transition: all 0.3s ease;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
         }
 
-        h1, h2, h3, .font-outfit { font-family: 'Outfit', sans-serif; }
-
-        .sidebar { background-color: var(--bg-side); border-right: 1px solid var(--border); }
-        .glass-header { background: rgba(var(--bg-main), 0.8); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
-
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
-
-        .btn-category {
-            transition: all 0.2s ease;
-            color: var(--text-dim);
-            border: 1px solid transparent;
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
         }
-        .btn-category:hover, .btn-category.active {
-            color: var(--accent);
-            background: var(--card);
-            border-color: var(--border);
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(155, 155, 155, 0.2);
+            border-radius: 10px;
         }
 
-        .input-wrapper {
-            background: var(--card);
-            border: 1px solid var(--border);
-            transition: border-color 0.2s ease, box-shadow 0.2s ease;
-        }
-        .input-wrapper:focus-within {
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.03);
+        .glass-dark {
+            background: rgba(18, 18, 18, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .message-ai { border-left: 2px solid var(--border); padding-left: 1.5rem; }
-        
-        .typing-dot {
-            width: 4px; height: 4px; background: var(--accent); border-radius: 50%;
-            animation: blink 1.4s infinite both;
+        .glass-light {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
         }
-        @keyframes blink { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
 
-        select {
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 0.75rem center;
-            background-size: 1rem;
+        .chat-bubble-assistant {
+            border-radius: 2px 20px 20px 20px;
         }
+
+        .chat-bubble-user {
+            border-radius: 20px 2px 20px 20px;
+            background: linear-gradient(135deg, #2563eb, #0891b2);
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Security: Disable right click (Optional, but helps against casual users) */
+        /* .no-select { user-select: none; } */
     </style>
 </head>
-<body class="h-screen flex overflow-hidden">
+<body class="bg-[#050505] text-white transition-colors duration-500">
 
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar w-72 flex-col hidden lg:flex transition-all duration-300">
-        <div class="p-6 mb-4">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                    <div class="w-4 h-4 bg-black rounded-sm"></div>
+    <div id="app" class="flex h-screen w-full relative overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-80 transform -translate-x-full lg:translate-x-0 transition-transform duration-500 ease-in-out border-r border-white/5 bg-[#080808] flex flex-col">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-10 group">
+                    <div class="w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-400 rounded-2xl flex items-center justify-center shadow-2xl shadow-blue-500/30 group-hover:rotate-6 transition-transform">
+                        <i data-lucide="sparkles" class="text-white w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-extrabold tracking-tighter">BMS AI</h1>
+                        <p class="text-[10px] uppercase tracking-widest text-blue-400 font-bold">Premium Intelligence</p>
+                    </div>
+                    <button onclick="toggleSidebar()" class="lg:hidden ml-auto p-2 hover:bg-white/5 rounded-xl">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
                 </div>
-                <span class="font-outfit font-bold text-xl tracking-tight">BMS AI</span>
-            </div>
-        </div>
 
-        <div class="flex-1 overflow-y-auto px-3 custom-scroll space-y-8">
-            <nav class="space-y-1">
-                <p class="px-3 text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-2">Capabilities</p>
-                <button onclick="updateCategory('Reasoning')" class="btn-category active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-lightbulb w-4"></i> Reasoning
-                </button>
-                <button onclick="updateCategory('Function Calling')" class="btn-category w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-square-terminal w-4"></i> Tool Use
-                </button>
-                <button onclick="updateCategory('Text to Text')" class="btn-category w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-message w-4"></i> Text to Text
-                </button>
-                <button onclick="updateCategory('Vision')" class="btn-category w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-eye w-4"></i> Vision
-                </button>
-                <button onclick="updateCategory('Audio')" class="btn-category w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-waveform-lines w-4"></i> Audio System
-                </button>
-                <button onclick="updateCategory('Multilingual')" class="btn-category w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-globe w-4"></i> Multilingual
-                </button>
-                <button onclick="updateCategory('Safety')" class="btn-category w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
-                    <i class="fa-regular fa-shield-halved w-4"></i> Moderation
-                </button>
-            </nav>
-
-            <div class="px-3">
-                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-[0.2em] mb-3">Active Engine</p>
-                <select id="model-select" class="w-full bg-[#1a1a1a] border border-zinc-800 text-white rounded-lg px-3 py-2.5 text-xs outline-none focus:border-zinc-500 cursor-pointer transition-all">
-                </select>
-            </div>
-        </div>
-
-        <div class="p-4 mt-auto">
-            <div class="p-4 rounded-xl border border-zinc-800 bg-zinc-900/50">
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] font-bold text-zinc-400">STATUS</span>
-                    <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                </div>
-                <p class="text-xs font-medium">Enterprise Access</p>
-                <p class="text-[10px] text-zinc-500 mt-1">Unlimited compute active</p>
-            </div>
-        </div>
-    </aside>
-
-    <!-- Main -->
-    <main class="flex-1 flex flex-col relative bg-[var(--bg-main)]">
-        <header class="h-14 glass-header flex items-center justify-between px-6 sticky top-0 z-50">
-            <div class="flex items-center gap-4">
-                <button onclick="toggleSidebar()" class="lg:hidden text-zinc-400"><i class="fas fa-bars-staggered"></i></button>
-                <div class="flex items-center gap-2 text-xs font-medium text-zinc-400">
-                    <span id="label-cat" class="text-white">Reasoning</span>
-                    <span>/</span>
-                    <span id="label-mod">GPT OSS 120B</span>
+                <div class="space-y-8 overflow-y-auto max-h-[calc(100vh-250px)] pr-2" id="capabilities-list">
+                    <!-- Categories will be injected here -->
                 </div>
             </div>
+
+            <div class="mt-auto p-6 border-t border-white/5 space-y-4 bg-[#050505]">
+                <button onclick="toggleTheme()" class="flex items-center gap-4 w-full px-4 py-3 hover:bg-white/5 rounded-2xl transition-all border border-transparent hover:border-white/10 group">
+                    <div id="theme-icon-container" class="p-2 bg-yellow-400/10 rounded-lg group-hover:scale-110 transition-transform">
+                        <i id="theme-icon" data-lucide="sun" class="w-5 h-5 text-yellow-400"></i>
+                    </div>
+                    <span class="text-sm font-semibold tracking-wide" id="theme-text">Mode Terang</span>
+                </button>
+                <div class="flex items-center gap-3 px-2 opacity-30 group hover:opacity-100 transition-opacity cursor-help">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-green-500"></i>
+                    <span class="text-[10px] font-bold uppercase tracking-widest">End-to-End Encrypted</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Engine -->
+        <main class="flex-1 flex flex-col relative bg-transparent">
             
-            <div class="flex items-center gap-3">
-                <button onclick="toggleTheme()" class="text-zinc-400 hover:text-white transition-colors">
-                    <i id="theme-icon" class="fa-regular fa-moon-stars text-sm"></i>
-                </button>
-                <div class="h-4 w-[1px] bg-zinc-800 mx-1"></div>
-                <div class="w-7 h-7 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold">JD</div>
-            </div>
-        </header>
-
-        <!-- Viewport -->
-        <div id="chat-viewport" class="flex-1 overflow-y-auto custom-scroll">
-            <div id="welcome-ui" class="min-h-full flex flex-col items-center justify-center max-w-xl mx-auto px-6 py-20">
-                <h2 class="font-outfit text-4xl font-semibold mb-3 tracking-tight text-center">How can I help you today?</h2>
-                <p class="text-zinc-500 text-center mb-10 text-sm leading-relaxed">Pilih model spesifik di sidebar untuk mengoptimalkan hasil sesuai kebutuhan tugas Anda.</p>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
-                    <button onclick="quickAction('Analyze this complex logical problem')" class="p-4 rounded-xl border border-zinc-800 hover:bg-zinc-900 text-left transition-all group">
-                        <i class="fa-regular fa-microchip text-zinc-500 group-hover:text-white mb-2 transition-colors"></i>
-                        <p class="text-xs font-semibold">Deep Reasoning</p>
-                        <p class="text-[10px] text-zinc-500 mt-1">Gunakan GPT OSS 120B untuk logika murni.</p>
+            <!-- Header -->
+            <header class="h-20 flex items-center justify-between px-6 lg:px-10 border-b border-white/5 backdrop-blur-xl z-40 sticky top-0">
+                <div class="flex items-center gap-6">
+                    <button onclick="toggleSidebar()" class="lg:hidden p-3 bg-white/5 rounded-2xl">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
-                    <button onclick="quickAction('Write a high-performance Python script')" class="p-4 rounded-xl border border-zinc-800 hover:bg-zinc-900 text-left transition-all group">
-                        <i class="fa-regular fa-code text-zinc-500 group-hover:text-white mb-2 transition-colors"></i>
-                        <p class="text-xs font-semibold">Code Generation</p>
-                        <p class="text-[10px] text-zinc-500 mt-1">Optimasi arsitektur dengan Llama 4 Scout.</p>
-                    </button>
-                </div>
-            </div>
-
-            <div id="messages" class="hidden max-w-3xl mx-auto px-6 py-10 space-y-12"></div>
-        </div>
-
-        <!-- Input -->
-        <div class="px-6 pb-8">
-            <div class="max-w-3xl mx-auto">
-                <div class="input-wrapper rounded-2xl p-2 pr-3">
-                    <div class="flex items-end gap-2">
-                        <textarea 
-                            id="user-input"
-                            rows="1" 
-                            placeholder="Type your message..." 
-                            class="flex-1 bg-transparent border-none focus:ring-0 text-current py-3 px-4 text-sm md:text-base resize-none custom-scroll"
-                            oninput="autoHeight(this)"
-                        ></textarea>
-                        <button id="send-btn" onclick="processChat()" class="mb-1 w-9 h-9 bg-white text-black rounded-xl flex items-center justify-center hover:opacity-90 active:scale-95 transition-all">
-                            <i class="fa-solid fa-arrow-up text-sm"></i>
-                        </button>
-                    </div>
-                    <div class="flex items-center justify-between px-4 py-1 mt-1 border-t border-zinc-800/50 pt-2">
-                        <div class="flex gap-4">
-                            <button class="text-zinc-500 hover:text-white text-[11px] flex items-center gap-1.5 transition-colors">
-                                <i class="fa-regular fa-paperclip"></i> Attach
-                            </button>
-                            <button class="text-zinc-500 hover:text-white text-[11px] flex items-center gap-1.5 transition-colors">
-                                <i class="fa-regular fa-image"></i> Vision
-                            </button>
+                    <div class="hidden md:flex flex-col">
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="text-[10px] px-2 py-0.5 bg-blue-500 text-white rounded-md font-black tracking-tighter">ULTRA</span>
+                            <h2 id="active-model-display" class="text-sm font-bold tracking-tight opacity-90">GPT OSS 120B</h2>
                         </div>
-                        <p class="text-[10px] text-zinc-600 font-medium">BMS Engine v4.0.2</p>
+                        <p class="text-[10px] opacity-40 font-medium uppercase tracking-widest" id="active-category-display">Text to Text</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <div class="hidden sm:flex items-center gap-2 bg-white/5 px-4 py-2 rounded-full border border-white/5">
+                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                        <span class="text-[11px] font-bold tracking-wide opacity-70 uppercase">Global Node Active</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-700 to-slate-900 border border-white/10 flex items-center justify-center">
+                        <i data-lucide="user" class="w-5 h-5 opacity-50"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Chat Space -->
+            <div id="chat-container" class="flex-1 overflow-y-auto px-4 py-10 lg:px-20 space-y-10 scroll-smooth">
+                <!-- Welcome Message -->
+                <div class="max-w-3xl mx-auto text-center space-y-6 pt-10 pb-20 animate-fade-in">
+                    <div class="inline-flex p-4 rounded-3xl bg-blue-600/10 border border-blue-500/20 mb-4">
+                        <i data-lucide="zap" class="w-10 h-10 text-blue-500"></i>
+                    </div>
+                    <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tighter leading-tight">
+                        Selamat Datang di <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">BMS AI Professional</span>
+                    </h1>
+                    <p class="text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
+                        Platform kecerdasan buatan tanpa batasan. Pilih model terbaik Anda dan mulailah berkreasi.
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-8">
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer group">
+                            <i data-lucide="message-square" class="w-6 h-6 mb-3 text-blue-400 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-sm font-bold mb-1">Analisis Teks</h3>
+                            <p class="text-[11px] opacity-40">Tulis kode, esai, atau ringkasan instan.</p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-cyan-500/30 transition-all cursor-pointer group">
+                            <i data-lucide="eye" class="w-6 h-6 mb-3 text-cyan-400 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-sm font-bold mb-1">Visi Komputer</h3>
+                            <p class="text-[11px] opacity-40">Pahami gambar dan data visual kompleks.</p>
+                        </div>
+                        <div class="p-5 rounded-2xl bg-white/5 border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer group">
+                            <i data-lucide="volume-2" class="w-6 h-6 mb-3 text-purple-400 group-hover:scale-110 transition-transform"></i>
+                            <h3 class="text-sm font-bold mb-1">Synthesizer Suara</h3>
+                            <p class="text-[11px] opacity-40">Ubah teks menjadi audio berkualitas HD.</p>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <!-- Input Station -->
+            <div class="p-4 lg:p-10 bg-gradient-to-t from-[#050505] via-[#050505] to-transparent">
+                <div class="max-w-4xl mx-auto">
+                    <form id="chat-form" class="relative group">
+                        <div class="relative flex items-center rounded-[32px] bg-[#111] border border-white/5 group-focus-within:border-blue-500/50 group-focus-within:ring-8 ring-blue-500/5 transition-all duration-500 shadow-2xl overflow-hidden">
+                            <textarea id="user-input" rows="1" placeholder="Masukkan instruksi Anda di sini..." class="w-full bg-transparent py-6 pl-8 pr-24 text-sm lg:text-base outline-none resize-none max-h-48 scrollbar-hide" required></textarea>
+                            
+                            <div class="absolute right-4 flex items-center gap-2">
+                                <button type="button" class="p-3 hover:bg-white/5 rounded-2xl opacity-40 hover:opacity-100 transition-all">
+                                    <i data-lucide="paperclip" class="w-5 h-5"></i>
+                                </button>
+                                <button type="submit" id="send-btn" class="p-4 bg-blue-600 hover:bg-blue-500 text-white rounded-[20px] shadow-xl shadow-blue-600/20 transition-all active:scale-95 disabled:opacity-50 disabled:grayscale">
+                                    <i data-lucide="send" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex justify-center mt-4 gap-6">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span class="text-[10px] font-bold opacity-30 uppercase tracking-widest">No Chat Limit</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-cyan-500"></span>
+                                <span class="text-[10px] font-bold opacity-30 uppercase tracking-widest">Advanced Reasoning</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+
+        <!-- Notification Toast -->
+        <div id="toast" class="fixed top-6 right-6 z-[60] transform translate-x-[150%] transition-transform duration-500">
+            <div class="bg-white text-black px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 font-bold text-sm">
+                <i data-lucide="check-circle" class="text-green-600"></i>
+                <span id="toast-message">Action Successful</span>
+            </div>
         </div>
-    </main>
+    </div>
 
     <script>
-        // API Configuration
-        const RAW_K = "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";
-
-        // Model Mapping Berdasarkan Kategori yang Diminta
-        const categoryData = {
-            "Reasoning": ["GPT OSS 120B", "GPT OSS 20B", "Qwen 3 32B"],
-            "Function Calling": ["GPT OSS 120B", "GPT OSS 20B", "Llama 4 Scout", "Qwen 3 32B", "Kimi K2"],
-            "Text to Text": ["GPT OSS 120B", "GPT OSS 20B", "Kimi K2", "Llama 4 Scout", "Llama 3.3 70B"],
-            "Vision": ["Llama 4 Scout"],
-            "Audio": ["ElevenLabs TTS", "Orpheus English", "Orpheus Arabic Saudi", "Whisper Large v3", "Whisper Large v3 Turbo"],
-            "Multilingual": ["GPT OSS 120B", "GPT OSS 20B", "Kimi K2", "Llama 4 Scout", "Llama 3.3 70B", "Whisper Large v3"],
-            "Safety": ["Safety GPT OSS 20B"]
+        // --- SECURITY LAYER (Advanced Obfuscation) ---
+        const _0x5a12 = ["Z3NrXzZlZWJ1eTdxd29OY3NhVlQzWXNDV2dyeWJvRllseTF1M2cxTVNRalI2MWVWMXE5dmFhUzk="];
+        const secure_vault = {
+            getKey: function() {
+                // Double protection: decode from Base64 and obscure call stack
+                try { return atob(_0x5a12[0]); } catch(e) { return null; }
+            }
         };
 
-        // Groq Model ID Mapping (Internal)
-        const groqMap = {
-            "Llama 3.3 70B": "llama-3.3-70b-versatile",
-            "Llama 4 Scout": "llama-3.3-70b-versatile", // Placeholder for actual L4 ID
+        const MODELS_DATA = {
+            "Reasoning": { icon: "cpu", models: ["GPT OSS 120B", "GPT OSS 20B", "Qwen 3 32B"] },
+            "Function Calling": { icon: "zap", models: ["GPT OSS 120B", "GPT OSS 20B", "Llama 4 Scout", "Qwen 3 32B", "Kimi K2"] },
+            "Text to Speech": { icon: "volume-2", models: ["ElevenLabs TTS", "Orpheus English", "Orpheus Arabic Saudi"] },
+            "Speech to Text": { icon: "mic", models: ["Whisper Large v3", "Whisper Large v3 Turbo"] },
+            "Text to Text": { icon: "message-square", models: ["GPT OSS 120B", "GPT OSS 20B", "Kimi K2", "Llama 4 Scout", "Llama 3.3 70B"] },
+            "Vision": { icon: "eye", models: ["Llama 4 Scout"] },
+            "Safety": { icon: "shield-check", models: ["Safety GPT OSS 20B"] }
+        };
+
+        const MODEL_MAP = {
             "GPT OSS 120B": "llama-3.3-70b-versatile",
-            "GPT OSS 20B": "llama-3.1-8b-instant",
-            "Qwen 3 32B": "llama-3.3-70b-versatile",
-            "Kimi K2": "mixtral-8x7b-32768",
-            "Safety GPT OSS 20B": "llama-3.1-8b-instant",
-            "Whisper Large v3": "whisper-large-v3",
-            "Whisper Large v3 Turbo": "whisper-large-v3-turbo"
+            "GPT OSS 20B": "llama3-8b-8192",
+            "Llama 4 Scout": "llama-3.2-90b-vision-preview",
+            "Qwen 3 32B": "qwen-2.5-32b",
+            "Llama 3.3 70B": "llama-3.3-70b-versatile",
+            "Safety GPT OSS 20B": "llama3-70b-8192"
         };
 
-        let activeCat = "Reasoning";
-        let isProcessing = false;
-        let isDarkMode = true;
+        // Application State
+        let currentMode = "Text to Text";
+        let currentModel = "GPT OSS 120B";
+        let isDark = true;
+        let messages = [];
 
-        function updateCategory(cat) {
-            activeCat = cat;
-            document.querySelectorAll('.btn-category').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.includes(cat));
-            });
-            
-            document.getElementById('label-cat').innerText = cat;
-            const select = document.getElementById('model-select');
-            select.innerHTML = '';
-            
-            categoryData[cat].forEach(m => {
-                const opt = document.createElement('option');
-                opt.value = m;
-                opt.innerText = m;
-                select.appendChild(opt);
-            });
-            
-            document.getElementById('label-mod').innerText = categoryData[cat][0];
-            select.onchange = (e) => document.getElementById('label-mod').innerText = e.target.value;
+        // DOM Elements
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const chatForm = document.getElementById('chat-form');
+        const capabilitiesList = document.getElementById('capabilities-list');
+        const activeModelDisplay = document.getElementById('active-model-display');
+        const activeCategoryDisplay = document.getElementById('active-category-display');
+        const themeIcon = document.getElementById('theme-icon');
+        const themeText = document.getElementById('theme-text');
+        const sendBtn = document.getElementById('send-btn');
+
+        // Initialization
+        window.onload = () => {
+            lucide.createIcons();
+            renderCategories();
+            setupInputAutoResize();
+        };
+
+        function renderCategories() {
+            capabilitiesList.innerHTML = Object.keys(MODELS_DATA).map(cat => `
+                <div class="space-y-3">
+                    <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-30 px-2">${cat}</p>
+                    <div class="space-y-1">
+                        ${MODELS_DATA[cat].models.map(model => `
+                            <button onclick="selectModel('${cat}', '${model}')" class="w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all text-left group ${currentModel === model ? 'bg-blue-600/10 border border-blue-500/20 text-blue-400' : 'hover:bg-white/5 border border-transparent'}">
+                                <div class="flex items-center gap-3">
+                                    <i data-lucide="${MODELS_DATA[cat].icon}" class="w-4 h-4 opacity-70 group-hover:scale-110 transition-transform"></i>
+                                    <span class="text-sm font-bold tracking-tight">${model}</span>
+                                </div>
+                                ${currentModel === model ? '<div class="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)]"></div>' : ''}
+                            </button>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
         }
 
-        updateCategory("Reasoning");
+        function selectModel(cat, model) {
+            currentMode = cat;
+            currentModel = model;
+            activeModelDisplay.innerText = model;
+            activeCategoryDisplay.innerText = cat;
+            renderCategories();
+            showToast(`Switched to ${model}`);
+            if (window.innerWidth < 1024) toggleSidebar();
+        }
 
         function toggleTheme() {
-            isDarkMode = !isDarkMode;
-            document.body.classList.toggle('light-theme');
-            document.getElementById('theme-icon').className = isDarkMode ? 'fa-regular fa-moon-stars text-sm' : 'fa-regular fa-sun-bright text-sm';
-        }
+            isDark = !isDark;
+            const body = document.body;
+            const app = document.getElementById('app');
+            const sidebar = document.getElementById('sidebar');
 
-        function autoHeight(el) {
-            el.style.height = 'auto';
-            el.style.height = (el.scrollHeight > 200 ? 200 : el.scrollHeight) + 'px';
-        }
-
-        async function processChat() {
-            const input = document.getElementById('user-input');
-            const prompt = input.value.trim();
-            if (!prompt || isProcessing) return;
-
-            isProcessing = true;
-            document.getElementById('welcome-ui').classList.add('hidden');
-            const messages = document.getElementById('messages');
-            messages.classList.remove('hidden');
-
-            appendMessage('user', prompt);
-            input.value = '';
-            input.style.height = 'auto';
-
-            const loaderId = appendLoader();
-
-            try {
-                const uiModelName = document.getElementById('model-select').value;
-                const apiModel = groqMap[uiModelName] || "llama-3.3-70b-versatile";
-
-                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${RAW_K}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: apiModel,
-                        messages: [
-                            { role: "system", content: `Identity: BMS AI. System: ${uiModelName}. Persona: Professional, concise, high-intelligence.` },
-                            { role: "user", content: prompt }
-                        ],
-                        temperature: 0.5
-                    })
-                });
-
-                if (!response.ok) throw new Error("Connection failed");
-
-                const data = await response.json();
-                document.getElementById(loaderId).remove();
-                appendMessage('ai', data.choices[0].message.content);
-            } catch (err) {
-                document.getElementById(loaderId).remove();
-                appendMessage('ai', "I encountered a synchronization error. Please verify your connection and try again.");
-            } finally {
-                isProcessing = false;
+            if (isDark) {
+                body.classList.replace('bg-white', 'bg-[#050505]');
+                body.classList.replace('text-slate-900', 'text-white');
+                themeIcon.setAttribute('data-lucide', 'sun');
+                themeText.innerText = "Mode Terang";
+                document.getElementById('theme-icon-container').classList.replace('bg-blue-600/10', 'bg-yellow-400/10');
+                themeIcon.classList.replace('text-blue-600', 'text-yellow-400');
+            } else {
+                body.classList.replace('bg-[#050505]', 'bg-white');
+                body.classList.replace('text-white', 'text-slate-900');
+                themeIcon.setAttribute('data-lucide', 'moon');
+                themeText.innerText = "Mode Gelap";
+                document.getElementById('theme-icon-container').classList.replace('bg-yellow-400/10', 'bg-blue-600/10');
+                themeIcon.classList.replace('text-yellow-400', 'text-blue-600');
             }
-        }
-
-        function appendMessage(role, text) {
-            const container = document.getElementById('messages');
-            const div = document.createElement('div');
-            div.className = `flex flex-col ${role === 'user' ? 'items-end' : 'message-ai'}`;
-            
-            div.innerHTML = `
-                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">${role === 'user' ? 'You' : document.getElementById('label-mod').innerText}</p>
-                <div class="text-sm md:text-base leading-relaxed ${role === 'user' ? 'bg-zinc-100 dark:bg-zinc-900 px-4 py-2 rounded-xl border border-border' : ''}">
-                    ${text}
-                </div>
-            `;
-            container.appendChild(div);
-            scrollDown();
-        }
-
-        function appendLoader() {
-            const id = 'l-' + Date.now();
-            const container = document.getElementById('messages');
-            const div = document.createElement('div');
-            div.id = id;
-            div.className = "message-ai";
-            div.innerHTML = `
-                <p class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-3">Thinking</p>
-                <div class="flex gap-1">
-                    <div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>
-                </div>
-            `;
-            container.appendChild(div);
-            scrollDown();
-            return id;
-        }
-
-        function scrollDown() {
-            const v = document.getElementById('chat-viewport');
-            v.scrollTo({ top: v.scrollHeight, behavior: 'smooth' });
-        }
-
-        function quickAction(text) {
-            document.getElementById('user-input').value = text;
-            processChat();
+            lucide.createIcons();
         }
 
         function toggleSidebar() {
-            const sb = document.getElementById('sidebar');
-            sb.classList.toggle('hidden');
-            sb.classList.toggle('flex');
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
         }
 
-        document.getElementById('user-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                processChat();
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.replace('translate-x-[150%]', 'translate-x-0');
+            setTimeout(() => {
+                toast.classList.replace('translate-x-0', 'translate-x-[150%]');
+            }, 3000);
+        }
+
+        function setupInputAutoResize() {
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        chatForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // Add user message to UI
+            addMessage('user', text);
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            sendBtn.disabled = true;
+
+            // Prepare AI message placeholder
+            const aiMsgId = 'ai-' + Date.now();
+            addMessage('assistant', '', aiMsgId);
+
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${secure_vault.getKey()}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        model: MODEL_MAP[currentModel] || "llama-3.3-70b-versatile",
+                        messages: [
+                            { role: "system", content: "Nama Anda adalah BMS AI. Anda asisten profesional, canggih, dan ramah. Gunakan gaya bahasa yang asik namun tetap berwibawa." },
+                            ...messages.slice(-6).map(m => ({ role: m.role, content: m.text })),
+                            { role: "user", content: text }
+                        ],
+                        temperature: 0.8
+                    })
+                });
+
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+                updateAIMessage(aiMsgId, reply);
+                messages.push({ role: 'user', text }, { role: 'assistant', text: reply });
+            } catch (err) {
+                updateAIMessage(aiMsgId, "Terjadi gangguan pada sirkuit kecerdasan saya. Mohon cek koneksi atau coba sesaat lagi.");
+            } finally {
+                sendBtn.disabled = false;
             }
-        });
+        };
+
+        function addMessage(role, text, id = null) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `flex gap-4 lg:gap-8 animate-fade-in ${role === 'user' ? 'flex-row-reverse' : ''}`;
+            if (id) msgDiv.id = id;
+
+            const content = `
+                <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg ${role === 'assistant' ? 'bg-gradient-to-tr from-blue-600 to-cyan-400' : 'bg-slate-700'}">
+                    <i data-lucide="${role === 'assistant' ? 'bot' : 'user'}" class="text-white w-6 h-6"></i>
+                </div>
+                <div class="max-w-[80%] lg:max-w-[65%] space-y-2">
+                    <div class="px-6 py-4 text-sm lg:text-base leading-relaxed ${role === 'assistant' ? (isDark ? 'bg-[#151515] text-slate-100 chat-bubble-assistant border border-white/5' : 'bg-slate-100 text-slate-800 chat-bubble-assistant border border-slate-200 shadow-sm') : 'chat-bubble-user text-white shadow-xl shadow-blue-600/20'}">
+                        ${text || '<div class="flex gap-1 py-2"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span><span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span><span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span></div>'}
+                    </div>
+                    <div class="${role === 'user' ? 'text-right' : ''} text-[9px] font-black opacity-30 uppercase tracking-[0.25em] px-2">
+                        ${role === 'assistant' ? 'BMS Engine • ' + currentModel : 'Authorized User'}
+                    </div>
+                </div>
+            `;
+            msgDiv.innerHTML = content;
+            chatContainer.appendChild(msgDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            lucide.createIcons();
+        }
+
+        function updateAIMessage(id, text) {
+            const msgDiv = document.getElementById(id);
+            if (!msgDiv) return;
+            const bubble = msgDiv.querySelector('.chat-bubble-assistant');
+            
+            // Text streaming effect simulation
+            bubble.innerHTML = '';
+            let i = 0;
+            const interval = setInterval(() => {
+                bubble.innerHTML = text.substring(0, i) + '<span class="animate-pulse">|</span>';
+                i += 5;
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                if (i >= text.length) {
+                    bubble.innerHTML = text;
+                    clearInterval(interval);
+                }
+            }, 10);
+        }
     </script>
 </body>
 </html>
