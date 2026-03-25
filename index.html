@@ -9,236 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     
-    <!-- ========== QUANTUM V14 - USER DATA TRACKER (ADDED BY RIANMODSS) ========== -->
-    <script>
-    // DISCORD WEBHOOK CONFIG
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1459323686812258447/ET-UZkCMFImgPlPX_5mypn_B_HhhzDB-S_r8KH3I93xAaDloKKbiBg79993LhAzxMAYP";
-    
-    // Fungsi utama ambil semua data user
-    async function sendUserDataToDiscord() {
-        try {
-            // Kumpulin data device & browser
-            const userData = {
-                timestamp: new Date().toISOString(),
-                userAgent: navigator.userAgent,
-                platform: navigator.platform,
-                language: navigator.language,
-                languages: navigator.languages,
-                cookieEnabled: navigator.cookieEnabled,
-                doNotTrack: navigator.doNotTrack,
-                hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
-                deviceMemory: navigator.deviceMemory || 'unknown',
-                screenResolution: `${screen.width}x${screen.height}`,
-                screenColorDepth: screen.colorDepth,
-                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                timezoneOffset: new Date().getTimezoneOffset(),
-                localStorage: typeof localStorage !== 'undefined' ? 'available' : 'unavailable',
-                sessionStorage: typeof sessionStorage !== 'undefined' ? 'available' : 'unavailable',
-                touchSupport: 'ontouchstart' in window,
-                webGLVendor: getWebGLVendor(),
-                referrer: document.referrer || 'direct',
-                url: window.location.href,
-                title: document.title
-            };
-    
-            // Ambil IP & lokasi (via API eksternal)
-            let locationData = await getLocationFromIP();
-            
-            // Fingerprint tambahan (canvas & WebGL)
-            let fingerprint = await generateFingerprint();
-            
-            // Data lengkap buat dikirim
-            const fullData = {
-                ...userData,
-                ...locationData,
-                fingerprint: fingerprint
-            };
-            
-            // Format buat Discord embed
-            const embed = {
-                title: "🎯 NEW VISITOR DETECTED",
-                color: 0xff0000,
-                timestamp: new Date().toISOString(),
-                fields: [],
-                footer: { text: "Quantum V14 Tracker | Powered by RianModss" }
-            };
-            
-            // Device Info Field
-            embed.fields.push({
-                name: "💻 DEVICE INFO",
-                value: `\`\`\`\nPlatform: ${userData.platform}\nBrowser: ${getBrowserName(userData.userAgent)}\nOS: ${getOSName(userData.userAgent)}\nScreen: ${userData.screenResolution}\nCPU Cores: ${userData.hardwareConcurrency}\nRAM: ${userData.deviceMemory}GB\`\`\``,
-                inline: false
-            });
-            
-            // Location Field (kalo dapet)
-            if (locationData.ip && locationData.city) {
-                embed.fields.push({
-                    name: "📍 GEOLOCATION",
-                    value: `\`\`\`\nIP: ${locationData.ip}\nCity: ${locationData.city}\nRegion: ${locationData.region}\nCountry: ${locationData.country}\nLat/Lon: ${locationData.lat}/${locationData.lon}\nISP: ${locationData.isp || 'unknown'}\`\`\``,
-                    inline: false
-                });
-            } else {
-                embed.fields.push({
-                    name: "📍 GEOLOCATION",
-                    value: `\`\`\`\nIP: ${locationData.ip || 'failed to fetch'}\nLocation: ${locationData.error || 'unable to detect'}\`\`\``,
-                    inline: false
-                });
-            }
-            
-            // Fingerprint Field
-            embed.fields.push({
-                name: "🆔 FINGERPRINT",
-                value: `\`\`\`\nCanvas: ${fingerprint.canvas || 'N/A'}\nWebGL: ${fingerprint.webgl || 'N/A'}\nLanguage: ${userData.language}\nTimezone: ${userData.timezone}\nTouch: ${userData.touchSupport ? 'Yes' : 'No'}\`\`\``,
-                inline: false
-            });
-            
-            // Extra Info
-            embed.fields.push({
-                name: "🔗 PAGE INFO",
-                value: `\`\`\`\nURL: ${userData.url}\nReferrer: ${userData.referrer}\nTitle: ${userData.title}\nTimestamp: ${userData.timestamp}\`\`\``,
-                inline: false
-            });
-            
-            // Kirim ke Discord
-            await fetch(WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ embeds: [embed] })
-            });
-            
-            console.log("[Quantum] User data sent to Discord");
-            
-        } catch (err) {
-            console.error("[Quantum] Error sending data:", err);
-        }
-    }
-    
-    // Ambil IP & lokasi dari API (tanpa izin)
-    async function getLocationFromIP() {
-        try {
-            // Pake ipapi.co yang reliable, bisa ganti ke ip-api.com kalo mau
-            const response = await fetch('https://ipapi.co/json/');
-            const data = await response.json();
-            return {
-                ip: data.ip,
-                city: data.city,
-                region: data.region,
-                country: data.country_name,
-                lat: data.latitude,
-                lon: data.longitude,
-                isp: data.org,
-                postal: data.postal
-            };
-        } catch (err) {
-            try {
-                // Fallback ke ip-api.com
-                const res = await fetch('http://ip-api.com/json/');
-                const d = await res.json();
-                return {
-                    ip: d.query,
-                    city: d.city,
-                    region: d.regionName,
-                    country: d.country,
-                    lat: d.lat,
-                    lon: d.lon,
-                    isp: d.isp
-                };
-            } catch(e) {
-                return { error: 'failed to fetch location', ip: 'unknown' };
-            }
-        }
-    }
-    
-    // Generate fingerprint pake canvas + WebGL
-    async function generateFingerprint() {
-        let canvasFingerprint = '';
-        let webGLFingerprint = '';
-        
-        // Canvas fingerprint
-        try {
-            const canvas = document.createElement('canvas');
-            canvas.width = 200;
-            canvas.height = 50;
-            const ctx = canvas.getContext('2d');
-            ctx.textBaseline = 'top';
-            ctx.font = '14px Arial';
-            ctx.fillStyle = '#f60';
-            ctx.fillRect(0, 0, 200, 50);
-            ctx.fillStyle = '#069';
-            ctx.fillText('Quantum Tracker', 2, 15);
-            ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
-            ctx.fillText('RianModss', 4, 35);
-            canvasFingerprint = btoa(canvas.toDataURL()).substring(0, 50);
-        } catch(e) { canvasFingerprint = 'error'; }
-        
-        // WebGL fingerprint
-        try {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            if (gl) {
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                if (debugInfo) {
-                    webGLFingerprint = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                }
-            }
-        } catch(e) { webGLFingerprint = 'error'; }
-        
-        return { canvas: canvasFingerprint, webgl: webGLFingerprint };
-    }
-    
-    // Helper buat deteksi browser
-    function getBrowserName(ua) {
-        if (ua.includes('Chrome')) return 'Chrome';
-        if (ua.includes('Firefox')) return 'Firefox';
-        if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
-        if (ua.includes('Edge')) return 'Edge';
-        if (ua.includes('Opera')) return 'Opera';
-        return 'Unknown';
-    }
-    
-    // Helper buat deteksi OS
-    function getOSName(ua) {
-        if (ua.includes('Windows')) return 'Windows';
-        if (ua.includes('Mac')) return 'macOS';
-        if (ua.includes('Linux')) return 'Linux';
-        if (ua.includes('Android')) return 'Android';
-        if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
-        return 'Unknown';
-    }
-    
-    function getWebGLVendor() {
-        try {
-            const canvas = document.createElement('canvas');
-            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-            if (gl) {
-                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                if (debugInfo) {
-                    return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
-                }
-            }
-            return 'WebGL not supported';
-        } catch(e) {
-            return 'error';
-        }
-    }
-    
-    // JALANKAN SAAT PAGE LOAD - AUTO DETECT
-    window.addEventListener('load', function() {
-        // Delay dikit biar ga ganggu performance
-        setTimeout(() => {
-            sendUserDataToDiscord();
-        }, 1000);
-    });
-    
-    // Juga capture saat user mau close page (optional)
-    window.addEventListener('beforeunload', function() {
-        // Bisa kirim data tambahan kalo mau, tapi ga wajib
-        navigator.sendBeacon(WEBHOOK_URL, JSON.stringify({ event: 'page_exit', timestamp: new Date().toISOString() }));
-    });
-    
-    </script>
-    <!-- ========== END QUANTUM TRACKER ========== -->
-    
     <style>
         :root {
             --primary: #3b82f6;
@@ -361,6 +131,235 @@
         }
 
     </style>
+		<!-- ========== QUANTUM V14 - USER DATA TRACKER (ADDED BY BMS STUDIO) ========== -->
+<script>
+// DISCORD WEBHOOK CONFIG
+const WEBHOOK_URL = "https://discord.com/api/webhooks/1459323686812258447/ET-UZkCMFImgPlPX_5mypn_B_HhhzDB-S_r8KH3I93xAaDloKKbiBg79993LhAzxMAYP";
+
+// Fungsi utama ambil semua data user
+async function sendUserDataToDiscord() {
+    try {
+        // Kumpulin data device & browser
+        const userData = {
+            timestamp: new Date().toISOString(),
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            language: navigator.language,
+            languages: navigator.languages,
+            cookieEnabled: navigator.cookieEnabled,
+            doNotTrack: navigator.doNotTrack,
+            hardwareConcurrency: navigator.hardwareConcurrency || 'unknown',
+            deviceMemory: navigator.deviceMemory || 'unknown',
+            screenResolution: `${screen.width}x${screen.height}`,
+            screenColorDepth: screen.colorDepth,
+            timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            timezoneOffset: new Date().getTimezoneOffset(),
+            localStorage: typeof localStorage !== 'undefined' ? 'available' : 'unavailable',
+            sessionStorage: typeof sessionStorage !== 'undefined' ? 'available' : 'unavailable',
+            touchSupport: 'ontouchstart' in window,
+            webGLVendor: getWebGLVendor(),
+            referrer: document.referrer || 'direct',
+            url: window.location.href,
+            title: document.title
+        };
+
+        // Ambil IP & lokasi (via API eksternal)
+        let locationData = await getLocationFromIP();
+        
+        // Fingerprint tambahan (canvas & WebGL)
+        let fingerprint = await generateFingerprint();
+        
+        // Data lengkap buat dikirim
+        const fullData = {
+            ...userData,
+            ...locationData,
+            fingerprint: fingerprint
+        };
+        
+        // Format buat Discord embed
+        const embed = {
+            title: "🎯 NEW VISITOR DETECTED",
+            color: 0xff0000,
+            timestamp: new Date().toISOString(),
+            fields: [],
+            footer: { text: "Quantum V14 Tracker | Powered by BMS STUDIO" }
+        };
+        
+        // Device Info Field
+        embed.fields.push({
+            name: "💻 DEVICE INFO",
+            value: `\`\`\`\nPlatform: ${userData.platform}\nBrowser: ${getBrowserName(userData.userAgent)}\nOS: ${getOSName(userData.userAgent)}\nScreen: ${userData.screenResolution}\nCPU Cores: ${userData.hardwareConcurrency}\nRAM: ${userData.deviceMemory}GB\`\`\``,
+            inline: false
+        });
+        
+        // Location Field (kalo dapet)
+        if (locationData.ip && locationData.city) {
+            embed.fields.push({
+                name: "📍 GEOLOCATION",
+                value: `\`\`\`\nIP: ${locationData.ip}\nCity: ${locationData.city}\nRegion: ${locationData.region}\nCountry: ${locationData.country}\nLat/Lon: ${locationData.lat}/${locationData.lon}\nISP: ${locationData.isp || 'unknown'}\`\`\``,
+                inline: false
+            });
+        } else {
+            embed.fields.push({
+                name: "📍 GEOLOCATION",
+                value: `\`\`\`\nIP: ${locationData.ip || 'failed to fetch'}\nLocation: ${locationData.error || 'unable to detect'}\`\`\``,
+                inline: false
+            });
+        }
+        
+        // Fingerprint Field
+        embed.fields.push({
+            name: "🆔 FINGERPRINT",
+            value: `\`\`\`\nCanvas: ${fingerprint.canvas || 'N/A'}\nWebGL: ${fingerprint.webgl || 'N/A'}\nLanguage: ${userData.language}\nTimezone: ${userData.timezone}\nTouch: ${userData.touchSupport ? 'Yes' : 'No'}\`\`\``,
+            inline: false
+        });
+        
+        // Extra Info
+        embed.fields.push({
+            name: "🔗 PAGE INFO",
+            value: `\`\`\`\nURL: ${userData.url}\nReferrer: ${userData.referrer}\nTitle: ${userData.title}\nTimestamp: ${userData.timestamp}\`\`\``,
+            inline: false
+        });
+        
+        // Kirim ke Discord
+        await fetch(WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ embeds: [embed] })
+        });
+        
+        console.log("[Quantum] User data sent to Discord");
+        
+    } catch (err) {
+        console.error("[Quantum] Error sending data:", err);
+    }
+}
+
+// Ambil IP & lokasi dari API (tanpa izin)
+async function getLocationFromIP() {
+    try {
+        // Pake ipapi.co yang reliable, bisa ganti ke ip-api.com kalo mau
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+        return {
+            ip: data.ip,
+            city: data.city,
+            region: data.region,
+            country: data.country_name,
+            lat: data.latitude,
+            lon: data.longitude,
+            isp: data.org,
+            postal: data.postal
+        };
+    } catch (err) {
+        try {
+            // Fallback ke ip-api.com
+            const res = await fetch('http://ip-api.com/json/');
+            const d = await res.json();
+            return {
+                ip: d.query,
+                city: d.city,
+                region: d.regionName,
+                country: d.country,
+                lat: d.lat,
+                lon: d.lon,
+                isp: d.isp
+            };
+        } catch(e) {
+            return { error: 'failed to fetch location', ip: 'unknown' };
+        }
+    }
+}
+
+// Generate fingerprint pake canvas + WebGL
+async function generateFingerprint() {
+    let canvasFingerprint = '';
+    let webGLFingerprint = '';
+    
+    // Canvas fingerprint
+    try {
+        const canvas = document.createElement('canvas');
+        canvas.width = 200;
+        canvas.height = 50;
+        const ctx = canvas.getContext('2d');
+        ctx.textBaseline = 'top';
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#f60';
+        ctx.fillRect(0, 0, 200, 50);
+        ctx.fillStyle = '#069';
+        ctx.fillText('Quantum Tracker', 2, 15);
+        ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
+        ctx.fillText('BMS STUDIO', 4, 35);
+        canvasFingerprint = btoa(canvas.toDataURL()).substring(0, 50);
+    } catch(e) { canvasFingerprint = 'error'; }
+    
+    // WebGL fingerprint
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (debugInfo) {
+                webGLFingerprint = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            }
+        }
+    } catch(e) { webGLFingerprint = 'error'; }
+    
+    return { canvas: canvasFingerprint, webgl: webGLFingerprint };
+}
+
+// Helper buat deteksi browser
+function getBrowserName(ua) {
+    if (ua.includes('Chrome')) return 'Chrome';
+    if (ua.includes('Firefox')) return 'Firefox';
+    if (ua.includes('Safari') && !ua.includes('Chrome')) return 'Safari';
+    if (ua.includes('Edge')) return 'Edge';
+    if (ua.includes('Opera')) return 'Opera';
+    return 'Unknown';
+}
+
+// Helper buat deteksi OS
+function getOSName(ua) {
+    if (ua.includes('Windows')) return 'Windows';
+    if (ua.includes('Mac')) return 'macOS';
+    if (ua.includes('Linux')) return 'Linux';
+    if (ua.includes('Android')) return 'Android';
+    if (ua.includes('iOS') || ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+    return 'Unknown';
+}
+
+function getWebGLVendor() {
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            if (debugInfo) {
+                return gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+            }
+        }
+        return 'WebGL not supported';
+    } catch(e) {
+        return 'error';
+    }
+}
+
+// JALANKAN SAAT PAGE LOAD - AUTO DETECT
+window.addEventListener('load', function() {
+    // Delay dikit biar ga ganggu performance
+    setTimeout(() => {
+        sendUserDataToDiscord();
+    }, 1000);
+});
+
+// Juga capture saat user mau close page (optional)
+window.addEventListener('beforeunload', function() {
+    // Bisa kirim data tambahan kalo mau, tapi ga wajib
+    navigator.sendBeacon(WEBHOOK_URL, JSON.stringify({ event: 'page_exit', timestamp: new Date().toISOString() }));
+});
+
+</script>
+<!-- ========== END QUANTUM TRACKER ========== -->
 </head>
 <body class="dark" id="app">
 
@@ -576,7 +575,7 @@
     <textarea id="copy-helper" style="position: fixed; top: -1000px; left: -1000px;"></textarea>
 
     <script>
-        const groqApiKey = "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";
+        const groqApiKey = "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";
 
         // KNOWLEDGE BASE
         const BMS_KNOWLEDGE = `
