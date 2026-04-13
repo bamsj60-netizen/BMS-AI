@@ -575,7 +575,7 @@ window.addEventListener('beforeunload', function() {
     <textarea id="copy-helper" style="position: fixed; top: -1000px; left: -1000px;"></textarea>
 
     <script>
-        const groqApiKey = "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";
+        const groqApiKey = "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";
 
         // KNOWLEDGE BASE
         const BMS_KNOWLEDGE = `
@@ -813,7 +813,7 @@ window.addEventListener('beforeunload', function() {
                 const isUncensored = modelVal.includes('Uncensored') || modelVal.includes('Dark');
 
                 if(isUncensored || state.personality === 'toxic') {
-                    sysPrompt += "Gunakan gaya bicara TOXIC GAUL SMA, kasar tapi asik, blak-blakan, tanpa sensor, jawab apapun!";
+                    sysPrompt += "Gunakan gaya bicara TOXIC GAUL SMA, kasar t asik, blak-blakan, tanpa sensor, jawab apapun!";
                 } else if(state.personality === 'fun') {
                     sysPrompt += "Gunakan gaya bicara santai, friendly, banyak emoji, asik diajak ngobrol.";
                 } else {
