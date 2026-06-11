@@ -43,7 +43,8 @@ function cacheEls() {
     "promptAssistBtn","systemDialog","systemPromptInput","closeSystemBtn","resetSystemBtn","saveSystemBtn",
     "featureGrid","quickRow","tipList","inspectorText","previewFrame","startBtn","themeFromWelcome",
     "welcomeTitle","welcomeSub","welcomeFeatures","welcomeBullets","imageDialog","imageDialogRun",
-    "closeImageDialogBtn","imageDialogCancel","imageModelSelect","imagePromptInput","imageSizeInput"
+    "closeImageDialogBtn","imageDialogCancel","imageModelSelect","imagePromptInput","imageSizeInput",
+    "composerHintPills"
   ];
   ids.forEach((id) => els[id] = document.getElementById(id));
 }
@@ -238,7 +239,7 @@ function bindEvents() {
 
 function showWelcome() {
   els.welcome.classList.remove("hidden");
-  els.welcome.setAttribute("aria-hidden", "false");
+  els.welcome.setAttribute("aria-hidden", "true");
 }
 function startApp() {
   localStorage.setItem(APP_CONFIG.storageKey.welcome, "1");
