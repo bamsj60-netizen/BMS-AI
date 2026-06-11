@@ -31,26 +31,26 @@ window.APP_CONFIG = {
       wrapPrompt: true
     },
     vision: {
-      baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+      baseUrl: "",
       promptParam: "parts.text",
       imageParam: "parts.inlineData.data",
       modelParam: "model",
       mimeParam: "parts.inlineData.mimeType"
     },
     file: {
-      baseUrl: "https://generativelanguage.googleapis.com/v1beta/files",
+      baseUrl: "",
       promptParam: "text",
       fileParam: "fileData",
       modelParam: "model"
     },
     imageGen: {
-      baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:generateImages",
+      baseUrl: "",
       promptParam: "prompt",
       modelParam: "model",
       sizeParam: "aspectRatio"
     },
     downloader: {
-      baseUrl: "https://api-nanzz.my.id/docs/api/donwloader/all-in-one.php", // Pertahankan jika dari providernya memang typo "donwloader"
+      baseUrl: "https://api-nanzz.my.id/docs/api/donwloader/all-in-one.php",
       param: "url"
     },
     promptGen: {
