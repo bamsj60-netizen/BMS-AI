@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -10,7 +9,7 @@
   <script src="config.js" defer></script>
   <script src="app.js" defer></script>
   <link rel="stylesheet" href="styles.css" />
-<base target="_blank">
+  <base target="_blank">
 </head>
 <body data-theme="dark">
   <div id="welcome" class="welcome hidden" aria-hidden="true">
@@ -83,6 +82,8 @@
         <button class="compact-btn" id="settingsBtn">⚙ System prompt</button>
         <button class="compact-btn" id="exportBtn">⬇ Export conversations</button>
         <button class="compact-btn" id="clearBtn">🗑 Clear local data</button>
+        <button class="compact-btn" id="downloaderBtn">📥 Media downloader</button>
+        <button class="compact-btn" id="promptGenBtn">✨ Prompt generator</button>
       </div>
     </aside>
 
@@ -223,6 +224,46 @@
       <div class="modal-actions">
         <button class="ghost" id="imageDialogCancel" type="button">Batal</button>
         <button class="primary" id="imageDialogRun" type="button">Generate</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="downloadModal" class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>📥 Media Downloader</h3>
+        <p>Paste URL video/audio/gambar dari YouTube, TikTok, Instagram, dll.</p>
+      </div>
+      <button class="icon-btn" id="closeDownloadBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <span>URL Media</span>
+        <input id="dlUrl" type="url" placeholder="https://youtube.com/watch?v=..." />
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" id="downloadModalCancel" type="button">Batal</button>
+        <button class="primary" id="downloadModalRun" type="button">📥 Download</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog id="promptModal" class="modal">
+    <div class="modal-head">
+      <div>
+        <h3>✨ Prompt Generator</h3>
+        <p>Masukkan keyword atau topik, dapatkan prompt siap pakai dalam dua bahasa.</p>
+      </div>
+      <button class="icon-btn" id="closePromptModalBtn">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <span>Keyword / Topik</span>
+        <input id="pgKeyword" type="text" placeholder="Contoh: sunset di pantai, robot futuristik..." />
+      </div>
+      <div class="modal-actions">
+        <button class="ghost" id="promptModalCancel" type="button">Batal</button>
+        <button class="primary" id="promptModalRun" type="button">✨ Generate</button>
       </div>
     </div>
   </dialog>
