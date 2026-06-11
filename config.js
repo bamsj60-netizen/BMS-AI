@@ -30,25 +30,25 @@ window.APP_CONFIG = {
       modelParam: "model",
       wrapPrompt: true
     },
-    vision: {
-      baseUrl: "",
-      promptParam: "text",
-      imageParam: "image",
-      modelParam: "model",
-      mimeParam: "mime"
-    },
-    file: {
-      baseUrl: "",
-      promptParam: "text",
-      fileParam: "file",
-      modelParam: "model"
-    },
-    imageGen: {
-      baseUrl: "",
-      promptParam: "prompt",
-      modelParam: "model",
-      sizeParam: "size"
-    },
+vision: {
+  baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+  promptParam: "parts.text", // Tergantung struktur library Anda, biasanya dipetakan ke array parts
+  imageParam: "parts.inlineData.data",
+  modelParam: "model",
+  mimeParam: "parts.inlineData.mimeType"
+},
+file: {
+  baseUrl: "https://generativelanguage.googleapis.com/v1beta/files",
+  promptParam: "text",
+  fileParam: "fileData",
+  modelParam: "model"
+},
+imageGen: {
+  baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:generateImages",
+  promptParam: "prompt",
+  modelParam: "model",
+  sizeParam: "aspectRatio" // Imagen menggunakan aspek rasio (e.g., "1:1")
+},
     downloader: {
       baseUrl: "https://api-nanzz.my.id/docs/api/donwloader/all-in-one.php",
       param: "url"
