@@ -285,19 +285,17 @@ function bindEvents() {
 }
 
 function showWelcome() {
-  // Matikan fungsi aslinya, langsung alihkan ke tampilan aplikasi
-  showApp();
-  
-  // Opsi tambahan: set localStorage ke "1" secara otomatis di latar belakang
-  localStorage.setItem(APP_CONFIG.storageKey.welcome, "1");
+  els.welcome.classList.remove("hidden");
+  els.welcome.setAttribute("aria-hidden", "false");
+  els.app.classList.add("hidden");
 }
-
 function startApp() {
   localStorage.setItem(APP_CONFIG.storageKey.welcome, "1");
   els.welcome.classList.add("hidden");
-  els.welcome.setAttribute("aria-hidden", "false"); // Catatan: aria-hidden "false" berarti terlihat, "true" berarti tersembunyi bagi screen reader
+  els.welcome.setAttribute("aria-hidden", "true");
   showApp();
-}
+
+} 
 
 function showApp() {
   els.app.classList.remove("hidden");
