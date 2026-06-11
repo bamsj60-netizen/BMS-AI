@@ -302,11 +302,49 @@ function toggleTheme() {
 }
 
 function toggleSidebar() {
-  els.sidebar.classList.toggle("open");
+  const isOpen = els.sidebar.classList.toggle("open");
+  
+  // Toggle backdrop di mobile
+  if (window.innerWidth <= 980) {
+    if (isOpen) {
+      if (!document.getElementById('sidebarBackdrop')) {
+        const backdrop = document.createElement('div');
+        backdrop.id = 'sidebarBackdrop';
+        backdrop.className = 'sidebar-backdrop show';
+        backdrop.addEventListener('click', () => {
+          els.sidebar.classList.remove('open');
+          backdrop.remove();
+        });
+        document.body.appendChild(backdrop);
+      }
+    } else {
+      document.getElementById('sidebarBackdrop')?.remove();
+    }
+  }
 }
+
 function toggleRightbar() {
   state.rightPanelOpen = !state.rightPanelOpen;
   els.rightbar.classList.toggle("open", state.rightPanelOpen);
+  
+  // Toggle backdrop di tablet
+  if (window.innerWidth <= 1320 && window.innerWidth > 980) {
+    if (state.rightPanelOpen) {
+      if (!document.getElementById('rightbarBackdrop')) {
+        const backdrop = document.createElement('div');
+        backdrop.id = 'rightbarBackdrop';
+        backdrop.className = 'rightbar-backdrop show';
+        backdrop.addEventListener('click', () => {
+          state.rightPanelOpen = false;
+          els.rightbar.classList.remove('open');
+          backdrop.remove();
+        });
+        document.body.appendChild(backdrop);
+      }
+    } else {
+      document.getElementById('rightbarBackdrop')?.remove();
+    }
+  }
 }
 
 function closeSidebarIfMobile() {
