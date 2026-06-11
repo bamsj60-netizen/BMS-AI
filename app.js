@@ -1,4 +1,3 @@
-
 /* global APP_CONFIG */
 const state = {
   theme: APP_CONFIG.defaults.theme,
@@ -44,7 +43,10 @@ function cacheEls() {
     "featureGrid","quickRow","tipList","inspectorText","previewFrame","startBtn","themeFromWelcome",
     "welcomeTitle","welcomeSub","welcomeFeatures","welcomeBullets","imageDialog","imageDialogRun",
     "closeImageDialogBtn","imageDialogCancel","imageModelSelect","imagePromptInput","imageSizeInput",
-    "composerHintPills"
+    "composerHintPills",
+    "downloadModal","dlUrl","closeDownloadBtn","downloadModalCancel","downloadModalRun",
+    "promptModal","pgKeyword","closePromptModalBtn","promptModalCancel","promptModalRun",
+    "downloaderBtn","promptGenBtn"
   ];
   ids.forEach((id) => els[id] = document.getElementById(id));
 }
@@ -134,13 +136,15 @@ function buildStaticUI() {
 
   els.modelList.innerHTML = APP_CONFIG.models.map((m) => `
     <button class="side-btn ${state.model === m.id ? "active" : ""}" data-model="${m.id}">
-      <span>${m.label}</span>
+      <span>${m.icon ? m.icon + " " : ""}${m.label}</span>
       <small>${m.description}</small>
     </button>
   `).join("");
 
   els.topPills.innerHTML = APP_CONFIG.models.slice(0, 4).map((m) => `
-    <button class="pill ${state.model === m.id ? "active" : ""}" data-top-model="${m.id}">${m.label}</button>
+    <button class="pill ${state.model === m.id ? "active" : ""}" data-top-model="${m.id}">
+      ${m.icon ? m.icon + " " : ""}${m.label}
+    </button>
   `).join("");
 }
 
@@ -230,6 +234,24 @@ function bindEvents() {
   els.closeImageDialogBtn.addEventListener("click", () => els.imageDialog.close());
   els.imageDialogCancel.addEventListener("click", () => els.imageDialog.close());
 
+  // Downloader events
+  els.downloaderBtn.addEventListener("click", () => els.downloadModal.showModal());
+  els.closeDownloadBtn.addEventListener("click", () => els.downloadModal.close());
+  els.downloadModalCancel.addEventListener("click", () => els.downloadModal.close());
+  els.downloadModalRun.addEventListener("click", runDownloader);
+  els.dlUrl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); runDownloader(); }
+  });
+
+  // Prompt Generator events
+  els.promptGenBtn.addEventListener("click", () => els.promptModal.showModal());
+  els.closePromptModalBtn.addEventListener("click", () => els.promptModal.close());
+  els.promptModalCancel.addEventListener("click", () => els.promptModal.close());
+  els.promptModalRun.addEventListener("click", runPromptGen);
+  els.pgKeyword.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") { e.preventDefault(); runPromptGen(); }
+  });
+
   window.addEventListener("resize", () => {
     if (window.innerWidth > 980) {
       els.sidebar.classList.remove("open");
@@ -239,7 +261,7 @@ function bindEvents() {
 
 function showWelcome() {
   els.welcome.classList.remove("hidden");
-  els.welcome.setAttribute("aria-hidden", "true");
+  els.welcome.setAttribute("aria-hidden", "false");
 }
 function startApp() {
   localStorage.setItem(APP_CONFIG.storageKey.welcome, "1");
@@ -485,10 +507,18 @@ function renderMessage(msg) {
 }
 
 function renderContent(msg) {
+  if (msg.kind === "downloader") {
+    return renderDownloadResult(msg.downloadData);
+  }
+
+  if (msg.kind === "prompt-gen") {
+    return renderPromptGenResult(msg.promptData, msg.id);
+  }
+
   if (msg.kind === "image-generation") {
     return `
       <p><strong>Prompt gambar:</strong> ${escapeHtml(msg.prompt || "")}</p>
-      ${msg.resultUrl ? `<p><a href="${escapeAttr(msg.resultUrl)}" target="_blank" rel="noreferrer">Buka hasil gambar</a></p>` : ""}
+      ${msg.resultUrl ? `<p><a href="${escapeHtml(msg.resultUrl)}" target="_blank" rel="noreferrer">Buka hasil gambar</a></p>` : ""}
       ${msg.note ? `<p>${escapeHtml(msg.note)}</p>` : ""}
     `;
   }
@@ -498,6 +528,106 @@ function renderContent(msg) {
   }
 
   return markdownToHtml(msg.content || "");
+}
+
+function renderDownloadResult(data) {
+  if (!data) return `<p style="color:var(--muted)">Tidak ada data download.</p>`;
+
+  const links = [];
+
+  const candidates = [
+    data.download_url, data.downloadUrl, data.url,
+    data.result?.url, data.result?.download_url,
+    data.data?.url, data.data?.download_url,
+    data.video, data.audio, data.media
+  ];
+
+  candidates.forEach((c) => {
+    if (typeof c === "string" && c.startsWith("http")) {
+      links.push({ label: "Download", url: c });
+    }
+  });
+
+  const arrayFields = [data.links, data.medias, data.result?.links, data.data?.links];
+  arrayFields.forEach((arr) => {
+    if (Array.isArray(arr)) {
+      arr.forEach((item, i) => {
+        const itemUrl = typeof item === "string" ? item : (item.url || item.link || item.download_url);
+        const itemLabel = item.quality || item.format || item.type || item.label || `Link ${i + 1}`;
+        if (itemUrl && typeof itemUrl === "string") {
+          links.push({ label: escapeHtml(String(itemLabel)), url: itemUrl });
+        }
+      });
+    }
+  });
+
+  const title    = data.title    || data.result?.title    || data.data?.title    || "";
+  const thumb    = data.thumbnail|| data.result?.thumbnail|| data.data?.thumbnail|| "";
+  const duration = data.duration || data.result?.duration || data.data?.duration || "";
+  const author   = data.author   || data.uploader         || data.channel        || "";
+
+  return `
+    <div class="dl-result">
+      ${thumb ? `<img class="dl-thumb" src="${escapeHtml(thumb)}" alt="thumbnail" loading="lazy" />` : ""}
+      <div class="dl-meta">
+        ${title    ? `<div class="dl-title">${escapeHtml(title)}</div>` : ""}
+        ${author   ? `<div class="dl-author">👤 ${escapeHtml(author)}</div>` : ""}
+        ${duration ? `<div class="dl-duration">⏱ ${escapeHtml(String(duration))}</div>` : ""}
+      </div>
+      ${links.length
+        ? `<div class="dl-links">
+            ${links.map((l) => `
+              <a class="dl-link-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noreferrer noopener">
+                ⬇ ${l.label}
+              </a>
+            `).join("")}
+           </div>`
+        : `<p style="color:var(--muted)">
+             Tidak ada link download terdeteksi.
+             <br><small>Response API: <code>${escapeHtml(JSON.stringify(data).slice(0, 200))}</code></small>
+           </p>`
+      }
+    </div>
+  `;
+}
+
+function renderPromptGenResult(promptData, msgId) {
+  if (!promptData) return `<p style="color:var(--muted)">Tidak ada data prompt.</p>`;
+  const { english, indonesian, input } = promptData;
+  const safeId = escapeHtml(msgId || uid());
+
+  return `
+    <div class="pg-result">
+      <div class="pg-label">
+        ✨ Prompt untuk: <strong>${escapeHtml(input || "")}</strong>
+      </div>
+
+      ${english ? `
+        <div class="pg-section">
+          <div class="pg-section-head">
+            <span>🇬🇧 English</span>
+            <button class="code-btn" onclick="copyPrompt('pg-en-${safeId}')">Copy</button>
+          </div>
+          <div class="pg-text" id="pg-en-${safeId}">${escapeHtml(english)}</div>
+        </div>
+      ` : ""}
+
+      ${indonesian ? `
+        <div class="pg-section">
+          <div class="pg-section-head">
+            <span>🇮🇩 Indonesia</span>
+            <button class="code-btn" onclick="copyPrompt('pg-id-${safeId}')">Copy</button>
+          </div>
+          <div class="pg-text" id="pg-id-${safeId}">${escapeHtml(indonesian)}</div>
+        </div>
+      ` : ""}
+
+      <div class="pg-actions">
+        <button class="ghost" onclick="usePrompt('pg-en-${safeId}')">Pakai prompt Inggris</button>
+        <button class="ghost" onclick="usePrompt('pg-id-${safeId}')">Pakai prompt Indonesia</button>
+      </div>
+    </div>
+  `;
 }
 
 function renderMessageAttachments(list) {
@@ -843,11 +973,22 @@ function buildPayloadBase(convo, prompt, attachments, mode) {
 }
 
 async function fetchModelText(modelId, payload) {
-  const endpoint = APP_CONFIG.endpoints.text;
-  const url = new URL(endpoint.baseUrl);
-  url.searchParams.set(endpoint.param, assemblePrompt(payload));
-  if (endpoint.modelParam) url.searchParams.set(endpoint.modelParam, modelId);
-  const res = await fetch(url.toString());
+  const model = APP_CONFIG.models.find((m) => m.id === modelId);
+  const assembled = assemblePrompt(payload);
+
+  let fetchUrl;
+
+  if (model && typeof model.buildUrl === "function") {
+    fetchUrl = model.buildUrl(assembled);
+  } else {
+    const endpoint = APP_CONFIG.endpoints.text;
+    const url = new URL(endpoint.baseUrl);
+    url.searchParams.set(endpoint.param, assembled);
+    if (endpoint.modelParam) url.searchParams.set(endpoint.modelParam, modelId);
+    fetchUrl = url.toString();
+  }
+
+  const res = await fetch(fetchUrl);
   return parseResponse(await safeReadText(res));
 }
 
@@ -911,6 +1052,132 @@ async function fetchImageGeneration(modelId, prompt, size) {
     if (url) return { url, note: parsed.message || "Selesai." };
   }
   return { url: text.trim(), note: "Selesai." };
+}
+
+async function runDownloader() {
+  const url = els.dlUrl.value.trim();
+  if (!url) {
+    toast("URL kosong", "Masukkan URL media.");
+    return;
+  }
+
+  els.downloadModal.close();
+  state.generation = true;
+  renderStatus();
+
+  try {
+    const apiUrl = `${APP_CONFIG.endpoints.downloader.baseUrl}?${APP_CONFIG.endpoints.downloader.param}=${encodeURIComponent(url)}`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); }
+    catch { throw new Error("Response bukan JSON valid."); }
+
+    if (
+      data.error ||
+      data.status === false ||
+      (data.message && data.message.toLowerCase().includes("gagal"))
+    ) {
+      throw new Error(data.message || data.error || "Gagal memproses download.");
+    }
+
+    const convo = getCurrentConversation() || (() => {
+      createNewConversation();
+      return getCurrentConversation();
+    })();
+
+    convo.messages.push({
+      id: uid(), role: "user",
+      content: `📥 Download: ${url}`,
+      attachments: [], createdAt: Date.now()
+    });
+    convo.messages.push({
+      id: uid(), role: "assistant",
+      model: "downloader", kind: "downloader",
+      content: "", downloadData: data,
+      attachments: [], createdAt: Date.now()
+    });
+
+    convo.updatedAt = Date.now();
+    if (convo.title === "New conversation") convo.title = truncate(`Download: ${url}`, 52);
+
+    persistState();
+    renderAll();
+    els.dlUrl.value = "";
+    toast("✓ Berhasil", "Link download siap!");
+
+  } catch (err) {
+    toast("Download gagal", err.message || "Terjadi kesalahan.");
+  } finally {
+    state.generation = false;
+    renderStatus();
+  }
+}
+
+async function runPromptGen() {
+  const keyword = els.pgKeyword.value.trim();
+  if (!keyword) {
+    toast("Keyword kosong", "Masukkan keyword/topik.");
+    return;
+  }
+
+  els.promptModal.close();
+  state.generation = true;
+  renderStatus();
+
+  try {
+    const apiUrl = `${APP_CONFIG.endpoints.promptGen.baseUrl}?${APP_CONFIG.endpoints.promptGen.param}=${encodeURIComponent(keyword)}`;
+    const res = await fetch(apiUrl);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); }
+    catch { throw new Error("Response tidak valid."); }
+
+    const result     = data.result || {};
+    const english    = typeof result.english    === "string" ? result.english.trim()    : "";
+    const indonesian = typeof result.indonesian === "string" ? result.indonesian.trim() : "";
+    const inputKey   = data.input || keyword;
+
+    if (!english && !indonesian) {
+      throw new Error("Prompt tidak ditemukan dalam response.");
+    }
+
+    const convo = getCurrentConversation() || (() => {
+      createNewConversation();
+      return getCurrentConversation();
+    })();
+
+    convo.messages.push({
+      id: uid(), role: "user",
+      content: `✨ Generate prompt: ${keyword}`,
+      attachments: [], createdAt: Date.now()
+    });
+    convo.messages.push({
+      id: uid(), role: "assistant",
+      model: "prompt-gen", kind: "prompt-gen",
+      content: "",
+      promptData: { english, indonesian, input: inputKey },
+      attachments: [], createdAt: Date.now()
+    });
+
+    convo.updatedAt = Date.now();
+    if (convo.title === "New conversation") convo.title = truncate(`Prompt: ${keyword}`, 52);
+
+    persistState();
+    renderAll();
+    els.pgKeyword.value = "";
+    toast("✓ Prompt generated", "Pilih bahasa dan copy promptnya!");
+
+  } catch (err) {
+    toast("Generate gagal", err.message || "Terjadi kesalahan.");
+  } finally {
+    state.generation = false;
+    renderStatus();
+  }
 }
 
 function assemblePrompt(payload) {
@@ -1095,14 +1362,6 @@ function markdownToHtml(src) {
   return html;
 }
 
-function openPromptAssistIfNeeded() {
-  if (state.mode === "image") {
-    buildPromptAssist();
-  } else {
-    openPromptAssist();
-  }
-}
-
 function exportConversations() {
   const blob = new Blob([JSON.stringify(state.conversations, null, 2)], { type: "application/json" });
   const a = document.createElement("a");
@@ -1197,17 +1456,18 @@ function toast(title, message) {
   setTimeout(() => node.remove(), 3200);
 }
 
-function renderStatus() {
-  els.statusText.textContent = state.generation ? "Memproses…" : "Ready";
-  els.statusDot.style.background = state.generation ? "var(--warning)" : "var(--success)";
+function copyPrompt(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  navigator.clipboard.writeText(el.textContent || "")
+    .then(() => toast("Copied", "Prompt disalin ke clipboard."));
 }
 
-function copyText(text) {
-  return navigator.clipboard.writeText(text);
-}
-
-function hydrateConfigIfMissing() {
-  if (!APP_CONFIG.models.some((m) => m.id === state.model)) {
-    state.model = APP_CONFIG.models[0]?.id || "claude";
-  }
+function usePrompt(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  els.promptInput.value = el.textContent || "";
+  autoResize();
+  els.promptInput.focus();
+  toast("Siap", "Prompt sudah dimasukkan ke composer.");
 }
