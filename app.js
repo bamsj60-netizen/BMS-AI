@@ -286,7 +286,7 @@ function bindEvents() {
 
 function showWelcome() {
   els.welcome.classList.remove("hidden");
-  els.welcome.setAttribute("aria-hidden", "false");
+  els.welcome.setAttribute("aria-hidden", "true");
   els.app.classList.add("hidden");
 }
 
