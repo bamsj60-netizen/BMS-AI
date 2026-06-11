@@ -218,16 +218,37 @@ function bindEvents() {
     }
   });
 
+  // ✅ FIXED: Gabung semua document click handlers jadi satu
   document.addEventListener("click", (e) => {
+    // Handle action buttons (copy, edit, retry, preview, dll)
     const action = e.target.closest("[data-action]");
-    if (!action) return;
-    const { action: act, id } = action.dataset;
-    if (act === "copy") copyMessage(id);
-    if (act === "edit") editMessage(id);
-    if (act === "retry") retryFromMessage(id);
-    if (act === "preview") previewCode(id);
-    if (act === "copy-code") copyCodeBlock(id);
-    if (act === "attach-view") viewAttachment(id);
+    if (action) {
+      const { action: act, id } = action.dataset;
+      if (act === "copy") copyMessage(id);
+      if (act === "edit") editMessage(id);
+      if (act === "retry") retryFromMessage(id);
+      if (act === "preview") previewCode(id);
+      if (act === "copy-code") copyCodeBlock(id);
+      if (act === "attach-view") viewAttachment(id);
+      return; // ← Penting: return biar tidak execute code dibawah
+    }
+
+    // Close sidebar when clicking outside (mobile)
+    if (els.sidebar.classList.contains("open")) {
+      if (!els.sidebar.contains(e.target) && !els.menuBtn.contains(e.target)) {
+        els.sidebar.classList.remove("open");
+        document.getElementById('sidebarBackdrop')?.remove();
+      }
+    }
+    
+    // Close rightbar when clicking outside (tablet)
+    if (window.innerWidth <= 1320 && els.rightbar.classList.contains("open")) {
+      if (!els.rightbar.contains(e.target) && !els.panelBtn.contains(e.target)) {
+        state.rightPanelOpen = false;
+        els.rightbar.classList.remove("open");
+        document.getElementById('rightbarBackdrop')?.remove();
+      }
+    }
   });
 
   els.imageDialogRun.addEventListener("click", runImageGeneration);
@@ -255,25 +276,13 @@ function bindEvents() {
   window.addEventListener("resize", () => {
     if (window.innerWidth > 980) {
       els.sidebar.classList.remove("open");
+      document.getElementById('sidebarBackdrop')?.remove();
+    }
+    if (window.innerWidth > 1320) {
+      document.getElementById('rightbarBackdrop')?.remove();
     }
   });
 }
-
-document.addEventListener("click", (e) => {
-  // Close sidebar
-  if (els.sidebar.classList.contains("open")) {
-    if (!els.sidebar.contains(e.target) && !els.menuBtn.contains(e.target)) {
-      els.sidebar.classList.remove("open");
-    }
-  }
-  
-  // Close rightbar
-  if (window.innerWidth <= 1320 && els.rightbar.classList.contains("open")) {
-    if (!els.rightbar.contains(e.target) && !els.panelBtn.contains(e.target)) {
-      els.rightbar.classList.remove("open");
-    }
-  }
-});
 
 function showWelcome() {
   els.welcome.classList.remove("hidden");
