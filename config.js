@@ -31,23 +31,23 @@ window.APP_CONFIG = {
       wrapPrompt: true
     },
     vision: {
-      baseUrl: "",
-      promptParam: "parts.text",
-      imageParam: "parts.inlineData.data",
+      baseUrl: "https://api-nanzz.my.id/docs/api/ai/chat-gpt.php",
+      promptParam: "text",
+      imageParam: "image",
       modelParam: "model",
-      mimeParam: "parts.inlineData.mimeType"
+      mimeParam: "mime"
     },
     file: {
-      baseUrl: "",
+      baseUrl: "https://api-nanzz.my.id/docs/api/ai/chat-gpt.php",
       promptParam: "text",
-      fileParam: "fileData",
+      fileParam: "file",
       modelParam: "model"
     },
     imageGen: {
-      baseUrl: "",
+      baseUrl: "https://api-nanzz.my.id/docs/api/images/dalle.php",
       promptParam: "prompt",
       modelParam: "model",
-      sizeParam: "aspectRatio"
+      sizeParam: "size"
     },
     downloader: {
       baseUrl: "https://api-nanzz.my.id/docs/api/donwloader/all-in-one.php",
