@@ -45,14 +45,6 @@ window.APP_CONFIG = {
       promptParam: "prompt",
       modelParam: "model",
       sizeParam: "size"
-    },
-    downloader: {
-      baseUrl: "https://api-nanzz.my.id/docs/api/donwloader/all-in-one.php",
-      param: "url"
-    },
-    promptGen: {
-      baseUrl: "https://api-nanzz.my.id/docs/api/ai/prompt-generator.php",
-      param: "text"
     }
   },
   models: [
@@ -62,8 +54,7 @@ window.APP_CONFIG = {
       icon: "◌",
       accent: "#a58cff",
       modes: ["chat", "file", "vision", "image"],
-      description: "Rapi, aman, cocok buat ngerjain teks dan analisis.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=claude`; }
+      description: "Rapi, aman, cocok buat ngerjain teks dan analisis."
     },
     {
       id: "deepseek",
@@ -71,8 +62,7 @@ window.APP_CONFIG = {
       icon: "◆",
       accent: "#ff9f68",
       modes: ["chat", "file"],
-      description: "Reasoning kuat buat jawaban panjang dan logika.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=deepseek`; }
+      description: "Reasoning kuat buat jawaban panjang dan logika."
     },
     {
       id: "chatgpt",
@@ -80,8 +70,7 @@ window.APP_CONFIG = {
       icon: "●",
       accent: "#7ec8ff",
       modes: ["chat", "file", "vision", "image"],
-      description: "General purpose, fleksibel, enak buat segala hal.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=chatgpt`; }
+      description: "General purpose, fleksibel, enak buat segala hal."
     },
     {
       id: "gemini",
@@ -89,8 +78,7 @@ window.APP_CONFIG = {
       icon: "✦",
       accent: "#76e4c2",
       modes: ["chat", "file", "vision", "image"],
-      description: "Multimodal. Cocok buat gambar, file, dan ringkas data.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/gemini.php?text=${encodeURIComponent(t)}`; }
+      description: "Multimodal. Cocok buat gambar, file, dan ringkas data."
     },
     {
       id: "grok",
@@ -98,8 +86,7 @@ window.APP_CONFIG = {
       icon: "✸",
       accent: "#ffdf7a",
       modes: ["chat", "file"],
-      description: "Santai tapi tetap nendang.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=grok`; }
+      description: "Santai tapi tetap nendang."
     },
     {
       id: "llama",
@@ -107,8 +94,7 @@ window.APP_CONFIG = {
       icon: "λ",
       accent: "#ffb3d6",
       modes: ["chat", "file"],
-      description: "Model open-source yang lumayan fleksibel.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=llama`; }
+      description: "Model open-source yang lumayan fleksibel."
     },
     {
       id: "qwen",
@@ -116,8 +102,7 @@ window.APP_CONFIG = {
       icon: "◈",
       accent: "#8fd3ff",
       modes: ["chat", "file", "vision"],
-      description: "Bagus untuk bahasa campur dan struktur.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=qwen`; }
+      description: "Bagus untuk bahasa campur dan struktur."
     },
     {
       id: "perplexity",
@@ -125,8 +110,7 @@ window.APP_CONFIG = {
       icon: "⌕",
       accent: "#c7c3ff",
       modes: ["chat", "file"],
-      description: "Enak buat riset dan jawaban yang rapi.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(t)}&model=perplexity`; }
+      description: "Enak buat riset dan jawaban yang rapi."
     },
     {
       id: "copilot",
@@ -134,8 +118,7 @@ window.APP_CONFIG = {
       icon: "⌘",
       accent: "#82b1ff",
       modes: ["chat", "file"],
-      description: "Berguna untuk coding dan produk kerja.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/copilot.php?q=${encodeURIComponent(t)}`; }
+      description: "Berguna untuk coding dan produk kerja."
     },
     {
       id: "blackbox",
@@ -143,8 +126,7 @@ window.APP_CONFIG = {
       icon: "⌘",
       accent: "#f3a6ff",
       modes: ["chat", "file"],
-      description: "Fokus coding. Biar manusia tidak ngawur sendirian.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/blackbox.php?q=${encodeURIComponent(t)}`; }
+      description: "Fokus coding. Biar manusia tidak ngawur sendirian."
     },
     {
       id: "uncensored",
@@ -152,8 +134,7 @@ window.APP_CONFIG = {
       icon: "◍",
       accent: "#ff8ca1",
       modes: ["chat", "file"],
-      description: "Mode bebas. Gunakan dengan tanggung jawab.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/uncensored-ai.php?text=${encodeURIComponent(t)}`; }
+      description: "Mode bebas. Gunakan dengan tanggung jawab."
     },
     {
       id: "wormgpt",
@@ -161,8 +142,7 @@ window.APP_CONFIG = {
       icon: "⟡",
       accent: "#ff7f7f",
       modes: ["chat", "file"],
-      description: "Model alternatif untuk eksperimen.",
-      buildUrl: function(t) { return `https://api-nanzz.my.id/docs/api/ai/worm-gpt.php?prompt=${encodeURIComponent(t)}`; }
+      description: "Model alternatif untuk eksperimen."
     }
   ],
   presets: [
