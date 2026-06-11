@@ -259,16 +259,35 @@ function bindEvents() {
   });
 }
 
+document.addEventListener("click", (e) => {
+  // Close sidebar
+  if (els.sidebar.classList.contains("open")) {
+    if (!els.sidebar.contains(e.target) && !els.menuBtn.contains(e.target)) {
+      els.sidebar.classList.remove("open");
+    }
+  }
+  
+  // Close rightbar
+  if (window.innerWidth <= 1320 && els.rightbar.classList.contains("open")) {
+    if (!els.rightbar.contains(e.target) && !els.panelBtn.contains(e.target)) {
+      els.rightbar.classList.remove("open");
+    }
+  }
+});
+
 function showWelcome() {
   els.welcome.classList.remove("hidden");
   els.welcome.setAttribute("aria-hidden", "false");
+  els.app.classList.add("hidden");
 }
+
 function startApp() {
   localStorage.setItem(APP_CONFIG.storageKey.welcome, "1");
   els.welcome.classList.add("hidden");
   els.welcome.setAttribute("aria-hidden", "true");
   showApp();
 }
+
 function showApp() {
   els.app.classList.remove("hidden");
   renderAll();
