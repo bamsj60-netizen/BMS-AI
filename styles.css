@@ -561,7 +561,8 @@ a{color:inherit;text-decoration:none}
   line-height: 1.4;
 }
 .dl-author,
-.dl-duration {
+.dl-duration,
+.dl-source {
   font-size: .84rem;
   color: var(--muted);
 }
@@ -588,6 +589,58 @@ a{color:inherit;text-decoration:none}
 .dl-link-btn:hover {
   background: var(--accent-soft);
   border-color: color-mix(in srgb, var(--accent) 36%, var(--line));
+}
+.dl-no-links {
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: var(--panel-soft);
+}
+.dl-no-links p {
+  margin: 0 0 8px;
+}
+.dl-no-links details {
+  margin-top: 8px;
+}
+.dl-no-links summary {
+  cursor: pointer;
+  color: var(--muted);
+  font-size: .84rem;
+  user-select: none;
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.dl-no-links summary::-webkit-details-marker {
+  display: none;
+}
+.dl-no-links summary::before {
+  content: '▶';
+  display: inline-block;
+  font-size: .7rem;
+  transition: transform .2s ease;
+}
+.dl-no-links details[open] summary::before {
+  transform: rotate(90deg);
+}
+.dl-no-links summary:hover {
+  color: var(--text);
+}
+.dl-no-links pre {
+  margin: 8px 0 0;
+  padding: 10px;
+  background: rgba(0,0,0,.2);
+  border-radius: 10px;
+  font-size: .8rem;
+  overflow: auto;
+  max-height: 200px;
+  line-height: 1.5;
+  border: 1px solid var(--line);
+}
+.dl-no-links code {
+  color: var(--text);
+  font-family: 'Courier New', Courier, monospace;
 }
 
 /* ================================================================
