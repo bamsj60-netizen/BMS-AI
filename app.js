@@ -1161,7 +1161,7 @@ async function fetchModelText(modelId, payload) {
 async function fetchVisionResponse(modelId, payload) {
   const endpoint = APP_CONFIG.endpoints.vision;
   if (!endpoint.baseUrl) {
-    throw new Error("Endpoint vision belum diisi di config.js.");
+    throw new Error("Coming son Feature kata BMS HEHE.");
   }
   const body = {
     model: modelId,
@@ -1180,7 +1180,7 @@ async function fetchVisionResponse(modelId, payload) {
 async function fetchFileResponse(modelId, payload) {
   const endpoint = APP_CONFIG.endpoints.file;
   if (!endpoint.baseUrl) {
-    throw new Error("Endpoint file belum diisi di config.js.");
+    throw new Error("Coming son Feature kata BMS HEHE");
   }
   const body = {
     model: modelId,
@@ -1199,7 +1199,7 @@ async function fetchFileResponse(modelId, payload) {
 async function fetchImageGeneration(modelId, prompt, size) {
   const endpoint = APP_CONFIG.endpoints.imageGen;
   if (!endpoint.baseUrl) {
-    throw new Error("Endpoint image generation belum diisi di config.js.");
+    throw new Error("Coming son Feature kata BMS HEHE");
   }
   const body = {
     model: modelId,
