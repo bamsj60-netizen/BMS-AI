@@ -66,13 +66,33 @@ a{color:inherit;text-decoration:none}
 }
 
 .sidebar{
-  position:sticky;top:0;height:100vh;
+  position:sticky;
+  top:0;
+  height:100vh;
   padding:20px 16px;
   border-right:1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 92%, transparent);
   backdrop-filter: blur(20px);
-  overflow:auto;
+  overflow-y:auto;  /* ✅ FIX: overflow-y saja */
+  overflow-x:hidden; /* ✅ FIX: prevent horizontal scroll */
   z-index:20;
+  /* ✅ BARU - Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-soft) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--accent-soft);
+  border-radius: 3px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 
 .brand{
@@ -400,13 +420,33 @@ a{color:inherit;text-decoration:none}
 }
 
 .rightbar{
-  position:sticky;top:0;height:100vh;
+  position:sticky;
+  top:0;
+  height:100vh;
   padding:20px 16px;
   border-left:1px solid var(--line);
   background: color-mix(in srgb, var(--panel) 88%, transparent);
   backdrop-filter: blur(20px);
-  overflow:auto;
+  overflow-y:auto;  /* ✅ FIX: overflow-y saja */
+  overflow-x:hidden; /* ✅ FIX: prevent horizontal scroll */
   z-index:18;
+  /* ✅ BARU - Custom scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-soft) transparent;
+}
+
+.rightbar::-webkit-scrollbar {
+  width: 6px;
+}
+.rightbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.rightbar::-webkit-scrollbar-thumb {
+  background: var(--accent-soft);
+  border-radius: 3px;
+}
+.rightbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
 }
 .inspector-card{
   border:1px solid var(--line);background:var(--panel-soft);
@@ -699,6 +739,75 @@ a{color:inherit;text-decoration:none}
   .sidebar{
     position:fixed;left:0;top:0;transform:translateX(-104%);
     transition:transform .22s ease;width:min(88vw,var(--sidebar));z-index:28;
+    box-shadow:var(--shadow);
+  }
+  .sidebar.open{transform:translateX(0)}
+  .menu-btn{display:grid;place-items:center}
+  .topbar{padding:14px 16px 12px}
+  .content,.composer-wrap{padding-left:16px;padding-right:16px}
+  .feature-grid{grid-template-columns:1fr}
+  .welcome-grid{grid-template-columns:1fr}
+  .empty,.feed,.banner,.composer,.attach-strip{width:100%}
+}
+
+@media (max-width: 720px){
+  .empty{padding:20px;border-radius:26px}
+  .empty h1{font-size:1.8rem}
+  .hero h1{font-size:2rem}
+  .welcome-card{padding:16px;border-radius:28px}
+  .composer{padding:12px;border-radius:24px}
+  .msg.user{max-width:96%}
+  .feature-grid{gap:10px}
+  .banner{flex-direction:column;align-items:flex-start}
+  .toast-stack{left:16px;right:16px}
+  .toast{min-width:auto;max-width:none}
+}
+/* ================================================================
+   BACKDROP OVERLAY (Mobile)
+   ================================================================ */
+.sidebar-backdrop,
+.rightbar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  backdrop-filter: blur(4px);
+  z-index: 19;
+  transition: opacity .22s ease;
+}
+
+.sidebar-backdrop.show,
+.rightbar-backdrop.show {
+  display: block;
+}
+
+/* ================================================================
+   RESPONSIVE
+   ================================================================ */
+@media (max-width: 1320px){
+  .shell{grid-template-columns: var(--sidebar) minmax(0,1fr)}
+  .rightbar{
+    position:fixed;
+    right:0;
+    top:0;
+    transform:translateX(102%);
+    transition:transform .22s ease;
+    z-index:24;
+    box-shadow:var(--shadow);
+  }
+  .rightbar.open{transform:translateX(0)}
+}
+
+@media (max-width: 980px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .sidebar{
+    position:fixed;
+    left:0;
+    top:0;
+    transform:translateX(-104%);
+    transition:transform .22s ease;
+    width:min(88vw,var(--sidebar));
+    z-index:28;
     box-shadow:var(--shadow);
   }
   .sidebar.open{transform:translateX(0)}
