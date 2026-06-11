@@ -1,1 +1,213 @@
-eval(function(p,a,c,k,e,r){e=function(c){return(c<a?'':e(parseInt(c/a)))+((c=c%a)>35?String.fromCharCode(c+29):c.toString(36))};if(!''.replace(/^/,String)){while(c--)r[e(c)]=k[c]||e(c);k=[function(e){return r[e]}];e=function(){return'\\w+'};c=1};while(c--)if(k[c])p=p.replace(new RegExp('\\b'+e(c)+'\\b','g'),k[c]);return p}('Z.10={11:"H g",12:"13 14",15:"s-16 g 17",18:{t:"m.t",I:"m.19",1a:"m.1b",1c:"m.1d",J:"m.J"},1e:{1f:"7",j:"K",t:"1g"},1h:{1i:1j,1k:1l,1m:8},1n:{4:{k:"2://l-u.v.9/w/l/L/7-1o.x",y:"4",q:"j",1p:1q},n:{k:"2://z.A.B/C/D/M-1.5-1r:1s",E:"F.4",1t:"F.N.1u",q:"j",1v:"F.N.1w"},6:{k:"2://z.A.B/C/1x",E:"4",1y:"1z",q:"j"},1A:{k:"2://z.A.B/C/D/1B-3.0-1C-1D:1E",E:"i",q:"j",1F:"1G"},1H:{k:"2://l-u.v.9/w/l/1I/1J-1K-1L.x",y:"1M"},1N:{k:"2://l-u.v.9/w/l/L/i-O.x",y:"4"}},D:[{9:"K",a:"s",b:"🎭",c:"#1O",d:["7","6","n","o"],e:"1P 1Q.",f:(4)=>`2:},{9:"1R",a:"1S",b:"🧠",c:"#1T",d:["7","6"],e:"1U 1V.",f:(4)=>`2:},{9:"1W",a:"1X",b:"🤖",c:"#1Y",d:["7","6","n","o"],e:"1Z-20 g.",f:(4)=>`2:},{9:"M",a:"21",b:"💎",c:"#22",d:["7","6","n","o"],e:"23 24.",f:(4)=>`2:},{9:"25",a:"26",b:"🚀",c:"#27",d:["7","6"],e:"X.g 28 j.",f:(4)=>`2:},{9:"29",a:"2a",b:"🦙",c:"#2b",d:["7","6"],e:"2c 2d-2e.",f:(4)=>`2:},{9:"2f",a:"2g",b:"🌏",c:"#2h",d:["7","6","n"],e:"2i 2j.",f:(4)=>`2:},{9:"2k",a:"2l",b:"🔍",c:"#2m",d:["7","6"],e:"2n-2o g.",f:(4)=>`2:},{9:"2p",a:"2q",b:"🧑‍💻",c:"#2r",d:["7","6"],e:"2s g.",f:(4)=>`2:},{9:"2t",a:"2u",b:"⚡",c:"#2v",d:["7","6"],e:"2w 2x.",f:(4)=>`2:},{9:"2y",a:"2z",b:"🔓",c:"#2A",d:["7","6"],e:"2B 2C.",f:(4)=>`2:},{9:"2D",a:"2E",b:"🐛",c:"#2F",d:["7","6"],e:"2G 2H.",f:(4)=>`2:}],2I:[{r:"2J P Q",i:"R P Q 2K S 2L, 2M, 2N, 2O, h 2P."},{r:"T p",i:"T p 2Q 2R U. 2S 2T, 2U, h 2V V G 2W."},{r:"2X 6",i:"2Y 2Z 6 G 30 31, 32 33 34 h 35 V."},{r:"36 p",i:"R i o W G 37, 38, h 39 U."}],I:{3a:"3b 3c 3d H g",3e:"3f g 3g s, S 7, Y 6, Y p, h o W.",3h:["3i 3j 3k","3l 7, 6, p, h O","3m 3n h 3o","3p 3q 3r h 3s"]}};',62,215,'||https||text||file|chat||id|label|icon|accent|modes|description|buildUrl|AI|dan|prompt|model|baseUrl|api|auralis|vision|image|gambar|modelParam|title|Claude|theme|nanzz|my|docs|php|param|generativelanguage|googleapis|com|v1beta|models|promptParam|parts|yang|Auralis|welcome|settings|claude|ai|gemini|inlineData|generator|landing|page|Buat|dengan|Analisis|detail|penting|generation||analisis|window|APP_CONFIG|appName|brand|BMS|STUDIO|subtitle|like|workspace|storageKey|welcomeSeen|convo|conversations|current|currentConversation|defaults|mode|dark|ui|leftSidebarWidth|320|maxComposerHeight|220|maxAttachmentPreview|endpoints|gpt|wrapPrompt|true|flash|generateContent|imageParam|data|mimeParam|mimeType|files|fileParam|fileData|imageGen|imagen|generate|002|generateImages|sizeParam|aspectRatio|downloader|donwloader|all|in|one|url|promptGen|a58cff|Anthropic|reasoning|deepseek|DeepSeek|ff9f68|Reasoning|mendalam|chatgpt|ChatGPT|7ec8ff|General|purpose|Gemini|76e4c2|Google|multimodal|grok|Grok|ffdf7a|powerful|llama|Llama|ffb3d6|Meta|open|source|qwen|Qwen|8fd3ff|Alibaba|multilingual|perplexity|Perplexity|c7c3ff|Search|augmented|copilot|Copilot|82b1ff|Microsoft|blackbox|Blackbox|f3a6ff|Fokus|coding|uncensored|Uncensored|ff8ca1|Tanpa|filter|wormgpt|WormGPT|ff7f7f|Model|alternatif|presets|Bikin|modern|hero|fitur|pricing|testimonial|CTA|ini|secara|Jelaskan|objek|konteks|hal|terlihat|Baca|Ringkas|isi|ku|upload|lalu|kasih|insight|poin|Generate|sinematik|mewah|sangat|headline|Selamat|datang|di|subline|Workspace|bergaya|bullets|Sidebar|riwayat|percakapan|Mode|Tema|gelap|terang|Responsive|buat|desktop|mobile'.split('|'),0,{}))
+window.APP_CONFIG = {
+  appName: "Auralis AI",
+  brand: "BMS STUDIO",
+  subtitle: "Claude-like AI workspace",
+
+  storageKey: {
+    theme: "auralis.theme",
+    welcome: "auralis.welcomeSeen",
+    convo: "auralis.conversations",
+    current: "auralis.currentConversation",
+    settings: "auralis.settings"
+  },
+
+  defaults: {
+    mode: "chat",
+    model: "claude",
+    theme: "dark"
+  },
+
+  ui: {
+    leftSidebarWidth: 320,
+    maxComposerHeight: 220,
+    maxAttachmentPreview: 8
+  },
+
+  endpoints: {
+    text: {
+      baseUrl: "https://api-nanzz.my.id/docs/api/ai/chat-gpt.php",
+      param: "text",
+      modelParam: "model",
+      wrapPrompt: true
+    },
+    vision: {
+      baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+      promptParam: "parts.text",
+      imageParam: "parts.inlineData.data",
+      modelParam: "model",
+      mimeParam: "parts.inlineData.mimeType"
+    },
+    file: {
+      baseUrl: "https://generativelanguage.googleapis.com/v1beta/files",
+      promptParam: "text",
+      fileParam: "fileData",
+      modelParam: "model"
+    },
+    imageGen: {
+      baseUrl: "https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:generateImages",
+      promptParam: "prompt",
+      modelParam: "model",
+      sizeParam: "aspectRatio"
+    },
+    downloader: {
+      baseUrl: "https://api-nanzz.my.id/docs/api/donwloader/all-in-one.php", // Pertahankan jika dari providernya memang typo "donwloader"
+      param: "url"
+    },
+    promptGen: {
+      baseUrl: "https://api-nanzz.my.id/docs/api/ai/prompt-generator.php",
+      param: "text"
+    }
+  },
+
+  models: [
+    {
+      id: "claude",
+      label: "Claude",
+      icon: "🎭",
+      accent: "#a58cff",
+      modes: ["chat", "file", "vision", "image"],
+      description: "Anthropic reasoning.",
+      // Logika dinamis: arahkan ke endpoint yang benar berdasarkan mode
+      buildUrl: (text, mode = "chat") => {
+        if (mode === "vision") return APP_CONFIG.endpoints.vision.baseUrl;
+        if (mode === "image") return APP_CONFIG.endpoints.imageGen.baseUrl;
+        if (mode === "file") return APP_CONFIG.endpoints.file.baseUrl;
+        return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=claude`;
+      }
+    },
+    {
+      id: "deepseek",
+      label: "DeepSeek",
+      icon: "🧠",
+      accent: "#ff9f68",
+      modes: ["chat", "file"],
+      description: "Reasoning mendalam.",
+      buildUrl: (text, mode = "chat") => {
+        if (mode === "file") return APP_CONFIG.endpoints.file.baseUrl;
+        return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=deepseek`;
+      }
+    },
+    {
+      id: "chatgpt",
+      label: "ChatGPT",
+      icon: "🤖",
+      accent: "#7ec8ff",
+      modes: ["chat", "file", "vision", "image"],
+      description: "General-purpose AI.",
+      buildUrl: (text, mode = "chat") => {
+        if (mode === "vision") return APP_CONFIG.endpoints.vision.baseUrl;
+        if (mode === "image") return APP_CONFIG.endpoints.imageGen.baseUrl;
+        if (mode === "file") return APP_CONFIG.endpoints.file.baseUrl;
+        return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=chatgpt`;
+      }
+    },
+    {
+      id: "gemini",
+      label: "Gemini",
+      icon: "💎",
+      accent: "#76e4c2",
+      modes: ["chat", "file", "vision", "image"],
+      description: "Google multimodal.",
+      buildUrl: (text, mode = "chat") => {
+        if (mode === "vision") return APP_CONFIG.endpoints.vision.baseUrl;
+        if (mode === "image") return APP_CONFIG.endpoints.imageGen.baseUrl;
+        if (mode === "file") return APP_CONFIG.endpoints.file.baseUrl;
+        return `https://api-nanzz.my.id/docs/api/ai/gemini.php?text=${encodeURIComponent(text)}`;
+      }
+    },
+    {
+      id: "grok",
+      label: "Grok",
+      icon: "🚀",
+      accent: "#ffdf7a",
+      modes: ["chat"], // Dihapus mode file jika API Nanzz Grok tidak support
+      description: "X.AI powerful model.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=grok`
+    },
+    {
+      id: "llama",
+      label: "Llama",
+      icon: "🦙",
+      accent: "#ffb3d6",
+      modes: ["chat"],
+      description: "Meta open-source.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=llama`
+    },
+    {
+      id: "qwen",
+      label: "Qwen",
+      icon: "🌏",
+      accent: "#8fd3ff",
+      modes: ["chat", "file", "vision"],
+      description: "Alibaba multilingual.",
+      buildUrl: (text, mode = "chat") => {
+        if (mode === "vision") return APP_CONFIG.endpoints.vision.baseUrl;
+        if (mode === "file") return APP_CONFIG.endpoints.file.baseUrl;
+        return `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=qwen`;
+      }
+    },
+    {
+      id: "perplexity",
+      label: "Perplexity",
+      icon: "🔍",
+      accent: "#c7c3ff",
+      modes: ["chat"],
+      description: "Search-augmented AI.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/chat-gpt.php?text=${encodeURIComponent(text)}&model=perplexity`
+    },
+    {
+      id: "copilot",
+      label: "Copilot",
+      icon: "🧑‍💻",
+      accent: "#82b1ff",
+      modes: ["chat"],
+      description: "Microsoft AI.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/copilot.php?q=${encodeURIComponent(text)}`
+    },
+    {
+      id: "blackbox",
+      label: "Blackbox",
+      icon: "⚡",
+      accent: "#f3a6ff",
+      modes: ["chat"],
+      description: "Fokus coding.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/blackbox.php?q=${encodeURIComponent(text)}`
+    },
+    {
+      id: "uncensored",
+      label: "Uncensored",
+      icon: "🔓",
+      accent: "#ff8ca1",
+      modes: ["chat"],
+      description: "Tanpa filter.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/uncensored-ai.php?text=${encodeURIComponent(text)}`
+    },
+    {
+      id: "wormgpt",
+      label: "WormGPT",
+      icon: "🐛",
+      accent: "#ff7f7f",
+      modes: ["chat"],
+      description: "Model alternatif.",
+      buildUrl: (text) => `https://api-nanzz.my.id/docs/api/ai/worm-gpt.php?prompt=${encodeURIComponent(text)}`
+    }
+  ],
+
+  presets: [
+    { title: "Bikin landing page", prompt: "Buat landing page modern dengan hero, fitur, pricing, testimonial, dan CTA." },
+    { title: "Analisis gambar", prompt: "Analisis gambar ini secara detail. Jelaskan objek, konteks, dan hal penting yang terlihat." },
+    { title: "Baca file", prompt: "Ringkas isi file yang ku upload, lalu kasih insight dan poin penting." },
+    { title: "Generate gambar", prompt: "Buat prompt image generation yang sinematik, mewah, dan sangat detail." }
+  ],
+
+  welcome: {
+    headline: "Selamat datang di Auralis AI",
+    subline: "Workspace AI bergaya Claude, dengan chat, analisis file, analisis gambar, dan image generation.",
+    bullets: [
+      "Sidebar riwayat percakapan",
+      "Mode chat, file, gambar, dan generator",
+      "Tema gelap dan terang",
+      "Responsive buat desktop dan mobile"
+    ]
+  }
+};
