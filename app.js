@@ -535,46 +535,139 @@ function renderDownloadResult(data) {
 
   const links = [];
 
+  // ✅ FIXED: Extract dari berbagai kemungkinan struktur response
   const candidates = [
-    data.download_url, data.downloadUrl, data.url,
-    data.result?.url, data.result?.download_url,
-    data.data?.url, data.data?.download_url,
-    data.video, data.audio, data.media
+    // Level 1 - direct fields
+    data.download_url, 
+    data.downloadUrl, 
+    data.url,
+    data.video, 
+    data.audio, 
+    data.media,
+    
+    // Level 2 - nested dalam result
+    data.result?.download_url,
+    data.result?.downloadUrl,
+    data.result?.url,
+    data.result?.video,
+    data.result?.audio,
+    
+    // Level 3 - double nested (result.result)
+    data.result?.result?.download_url,
+    data.result?.result?.downloadUrl,
+    data.result?.result?.url,
+    data.result?.result?.video,
+    data.result?.result?.audio,
+    
+    // Level 4 - dalam data object
+    data.data?.download_url,
+    data.data?.downloadUrl,
+    data.data?.url,
+    data.data?.video,
+    data.data?.audio
   ];
 
+  // Collect all valid HTTP URLs
   candidates.forEach((c) => {
     if (typeof c === "string" && c.startsWith("http")) {
-      links.push({ label: "Download", url: c });
+      // Skip YouTube source URLs (bukan download link)
+      if (!c.includes("youtu.be") && !c.includes("youtube.com/watch")) {
+        links.push({ label: "Download", url: c });
+      }
     }
   });
 
-  const arrayFields = [data.links, data.medias, data.result?.links, data.data?.links];
+  // ✅ FIXED: Check array fields (medias, links, downloads, dll)
+  const arrayFields = [
+    data.links, 
+    data.medias, 
+    data.downloads,
+    data.result?.links, 
+    data.result?.medias,
+    data.result?.downloads,
+    data.result?.result?.links,
+    data.result?.result?.medias,
+    data.result?.result?.downloads,
+    data.data?.links,
+    data.data?.medias,
+    data.data?.downloads
+  ];
+
   arrayFields.forEach((arr) => {
     if (Array.isArray(arr)) {
       arr.forEach((item, i) => {
-        const itemUrl = typeof item === "string" ? item : (item.url || item.link || item.download_url);
-        const itemLabel = item.quality || item.format || item.type || item.label || `Link ${i + 1}`;
-        if (itemUrl && typeof itemUrl === "string") {
-          links.push({ label: escapeHtml(String(itemLabel)), url: itemUrl });
+        const itemUrl = typeof item === "string" ? item : (item.url || item.link || item.download_url || item.download);
+        const itemLabel = item.quality || item.format || item.type || item.label || item.resolution || `Link ${i + 1}`;
+        
+        if (itemUrl && typeof itemUrl === "string" && itemUrl.startsWith("http")) {
+          // Skip source URLs
+          if (!itemUrl.includes("youtu.be") && !itemUrl.includes("youtube.com/watch")) {
+            links.push({ 
+              label: escapeHtml(String(itemLabel)), 
+              url: itemUrl 
+            });
+          }
         }
       });
     }
   });
 
-  const title    = data.title    || data.result?.title    || data.data?.title    || "";
-  const thumb    = data.thumbnail|| data.result?.thumbnail|| data.data?.thumbnail|| "";
-  const duration = data.duration || data.result?.duration || data.data?.duration || "";
-  const author   = data.author   || data.uploader         || data.channel        || "";
+  // ✅ Extract metadata dari berbagai level
+  const title = 
+    data.title || 
+    data.result?.title || 
+    data.result?.result?.title || 
+    data.data?.title || 
+    "";
+
+  const thumb = 
+    data.thumbnail || 
+    data.thumbnai ||  // typo dari API kamu
+    data.thumb ||
+    data.result?.thumbnail || 
+    data.result?.thumbnai ||
+    data.result?.result?.thumbnail ||
+    data.result?.result?.thumbnai ||
+    data.data?.thumbnail || 
+    data.data?.thumbnai ||
+    "";
+
+  const duration = 
+    data.duration || 
+    data.result?.duration || 
+    data.result?.result?.duration || 
+    data.data?.duration || 
+    "";
+
+  const author = 
+    data.author || 
+    data.uploader || 
+    data.channel ||
+    data.result?.author ||
+    data.result?.uploader ||
+    data.result?.result?.author ||
+    data.result?.result?.uploader ||
+    data.data?.author ||
+    "";
+
+  const source = 
+    data.source || 
+    data.result?.source || 
+    data.result?.result?.source || 
+    "";
 
   return `
     <div class="dl-result">
       ${thumb ? `<img class="dl-thumb" src="${escapeHtml(thumb)}" alt="thumbnail" loading="lazy" />` : ""}
+      
       <div class="dl-meta">
-        ${title    ? `<div class="dl-title">${escapeHtml(title)}</div>` : ""}
-        ${author   ? `<div class="dl-author">👤 ${escapeHtml(author)}</div>` : ""}
+        ${title ? `<div class="dl-title">${escapeHtml(title)}</div>` : ""}
+        ${author ? `<div class="dl-author">👤 ${escapeHtml(author)}</div>` : ""}
+        ${source ? `<div class="dl-source">📍 Source: ${escapeHtml(source)}</div>` : ""}
         ${duration ? `<div class="dl-duration">⏱ ${escapeHtml(String(duration))}</div>` : ""}
       </div>
-      ${links.length
+
+      ${links.length > 0
         ? `<div class="dl-links">
             ${links.map((l) => `
               <a class="dl-link-btn" href="${escapeHtml(l.url)}" target="_blank" rel="noreferrer noopener">
@@ -582,10 +675,17 @@ function renderDownloadResult(data) {
               </a>
             `).join("")}
            </div>`
-        : `<p style="color:var(--muted)">
-             Tidak ada link download terdeteksi.
-             <br><small>Response API: <code>${escapeHtml(JSON.stringify(data).slice(0, 200))}</code></small>
-           </p>`
+        : `<div class="dl-no-links">
+             <p style="color:var(--warning);margin:0 0 8px">
+               ⚠️ Tidak ada link download terdeteksi dari API.
+             </p>
+             <details style="margin-top:8px">
+               <summary style="cursor:pointer;color:var(--muted);font-size:.84rem">
+                 Lihat raw response
+               </summary>
+               <pre style="margin-top:8px;padding:10px;background:rgba(0,0,0,.2);border-radius:10px;font-size:.8rem;overflow:auto;max-height:200px"><code>${escapeHtml(JSON.stringify(data, null, 2))}</code></pre>
+             </details>
+           </div>`
       }
     </div>
   `;
