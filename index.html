@@ -10,6 +10,7 @@
   <script src="config.js" defer></script>
   <script src="app.js" defer></script>
   <link rel="stylesheet" href="styles.css" />
+<base target="_blank">
 </head>
 <body data-theme="dark">
   <div id="welcome" class="welcome hidden" aria-hidden="true">
@@ -62,11 +63,6 @@
       </div>
 
       <button class="new-btn" id="newChatBtn">+ New chat</button>
-
-      <div class="feature-btns">
-        <button class="feature-btn" id="downloaderBtn">📥 Downloader</button>
-        <button class="feature-btn" id="promptGenBtn">✨ Prompt Generator</button>
-      </div>
 
       <div class="sidebar-block">
         <div class="sidebar-label">Mode</div>
@@ -137,10 +133,6 @@
       </section>
 
       <section class="composer-wrap">
-        <div class="edit-banner hidden" id="editBanner">
-          <span id="editLbl">Editing…</span>
-          <button class="btn-cancel-edit" id="cancelEditBtn">Batal</button>
-        </div>
         <div class="attach-strip hidden" id="attachStrip"></div>
 
         <div class="composer">
@@ -231,46 +223,6 @@
       <div class="modal-actions">
         <button class="ghost" id="imageDialogCancel" type="button">Batal</button>
         <button class="primary" id="imageDialogRun" type="button">Generate</button>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog id="downloadDialog" class="modal">
-    <div class="modal-head">
-      <div>
-        <h3>📥 All-in-One Downloader</h3>
-        <p>Download dari Instagram, TikTok, YouTube, Twitter, Facebook, dll.</p>
-      </div>
-      <button class="icon-btn" id="closeDownloadDialogBtn">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <span>URL Media</span>
-        <input type="url" id="dlUrl" placeholder="https://www.instagram.com/reel/..." />
-      </div>
-      <div class="modal-actions">
-        <button class="ghost" id="downloadDialogCancel" type="button">Batal</button>
-        <button class="primary" id="dlSubmitBtn" type="button">🔍 Proses</button>
-      </div>
-    </div>
-  </dialog>
-
-  <dialog id="promptGenDialog" class="modal">
-    <div class="modal-head">
-      <div>
-        <h3>✨ Prompt Generator</h3>
-        <p>Generate prompt AI berkualitas dari keyword sederhana.</p>
-      </div>
-      <button class="icon-btn" id="closePromptGenDialogBtn">✕</button>
-    </div>
-    <div class="modal-body">
-      <div class="field">
-        <span>Keyword / Topik</span>
-        <input type="text" id="pgKeyword" placeholder="misal: profesional coding lua" />
-      </div>
-      <div class="modal-actions">
-        <button class="ghost" id="promptGenDialogCancel" type="button">Batal</button>
-        <button class="primary" id="pgSubmitBtn" type="button">✨ Generate</button>
       </div>
     </div>
   </dialog>
